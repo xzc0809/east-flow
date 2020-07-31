@@ -55,6 +55,6 @@ var data_B = {
     ]
 }
 
-export function getDataB() {
+export function getDataB () {
     return data_B
 }

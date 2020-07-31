@@ -7,10 +7,21 @@
             <div class="ef-node-form-body">
                 <el-form :model="node" ref="dataForm" label-width="80px" v-show="type === 'node'">
                     <el-form-item label="类型">
-                        <el-input v-model="node.type" :disabled="true"></el-input>
+<!--                        <el-input v-model="node.type" ></el-input>-->
+                      <el-select v-model="value" placeholder="请选择">
+                        <el-option
+                          v-for="item in options"
+                          :key="item.value"
+                          :label="item.label"
+                          :value="item.value">
+                        </el-option>
+                      </el-select>
                     </el-form-item>
                     <el-form-item label="名称">
                         <el-input v-model="node.name"></el-input>
+                    </el-form-item>
+                    <el-form-item label="文案内容">
+                      <el-input type="textarea" v-model="node.content"></el-input>
                     </el-form-item>
                     <el-form-item label="left坐标">
                         <el-input v-model="node.left"></el-input>
@@ -47,14 +58,30 @@
     import { cloneDeep } from 'lodash'
 
     export default {
-        data() {
+        data () {
             return {
                 visible: true,
                 // node 或 line
                 type: 'node',
                 node: {},
                 line: {},
-                data: {}
+                data: {},
+                options: [{
+                    value: '1',
+                    label: '黄金糕'}, {
+                        value: '2',
+                        label: '双皮奶'
+                }, {
+                    value: '3',
+                    label: '蚵仔煎'
+                }, {
+                    value: '4',
+                    label: '龙须面'
+                }, {
+                    value: '5',
+                    label: '北京烤鸭'
+                }],
+                value: ''
             }
         },
         methods: {
@@ -63,7 +90,7 @@
              * @param data
              * @param id
              */
-            nodeInit(data, id) {
+            nodeInit (data, id) {
                 this.type = 'node'
                 this.data = data
                 data.nodeList.filter((node) => {
@@ -72,18 +99,19 @@
                     }
                 })
             },
-            lineInit(line) {
+            lineInit (line) {
                 this.type = 'line'
                 this.line = line
             },
             // 修改连线
-            saveLine() {
+            saveLine () {
                 this.$emit('setLineLabel', this.line.from, this.line.to, this.line.label)
             },
-            save() {
+            save () {
                 this.data.nodeList.filter((node) => {
                     if (node.id === this.node.id) {
                         node.name = this.node.name
+                        node.content = this.node.content
                         node.left = this.node.left
                         node.top = this.node.top
                         this.$emit('repaintEverything')

@@ -14,16 +14,20 @@
         </div>
         <!-- 节点名称 -->
         <div class="ef-node-text" :show-overflow-tooltip="true">
-            {{node.name}}
+            {{node.name}}<br/>
+            {{node.content}}
         </div>
-        <!-- 节点状态图标 -->
+
+      <div class="ef-node-text" :show-overflow-tooltip="true">
+      </div>
+      <!-- 节点状态图标 -->
         <div class="ef-node-right-ico">
             <i class="el-icon-circle-check el-node-state-success" v-show="node.state === 'success'"></i>
             <i class="el-icon-circle-close el-node-state-error" v-show="node.state === 'error'"></i>
             <i class="el-icon-warning-outline el-node-state-warning" v-show="node.state === 'warning'"></i>
             <i class="el-icon-loading el-node-state-running" v-show="node.state === 'running'"></i>
         </div>
-    </div>
+      </div>
 </template>
 
 <script>
@@ -32,25 +36,25 @@
             node: Object,
             activeElement: Object
         },
-        data() {
+        data () {
             return {
             }
         },
         computed: {
-            nodeContainerClass() {
+            nodeContainerClass () {
                 return {
                     'ef-node-container': true,
                     'ef-node-active': this.activeElement.type == 'node' ? this.activeElement.nodeId === this.node.id : false
                 }
             },
             // 节点容器样式
-            nodeContainerStyle() {
+            nodeContainerStyle () {
                 return {
                     top: this.node.top,
                     left: this.node.left
                 }
             },
-            nodeIcoClass() {
+            nodeIcoClass () {
                 var nodeIcoClass = {}
                 nodeIcoClass[this.node.ico] = true
                 // 添加该class可以推拽连线出来
@@ -60,19 +64,19 @@
         },
         methods: {
             // 点击节点
-            clickNode() {
+            clickNode () {
                 this.$emit('clickNode', this.node.id)
             },
             // 鼠标移动后抬起
-            changeNodeSite() {
+            changeNodeSite () {
                 // 避免抖动
                 if (this.node.left == this.$refs.node.style.left && this.node.top == this.$refs.node.style.top) {
-                    return;
+                    return
                 }
                 this.$emit('changeNodeSite', {
                     nodeId: this.node.id,
                     left: this.$refs.node.style.left,
-                    top: this.$refs.node.style.top,
+                    top: this.$refs.node.style.top
                 })
             }
         }

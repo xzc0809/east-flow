@@ -21,7 +21,7 @@
     }
 
     export default {
-        data() {
+        data () {
             return {
                 activeNames: '1',
                 // draggable配置参数参考 https://www.cnblogs.com/weixin186/p/10108679.html
@@ -31,7 +31,7 @@
                     disabled: false,
                     ghostClass: 'tt',
                     // 不使用H5原生的配置
-                    forceFallback: true,
+                    forceFallback: true
                     // 拖拽的时候样式
                     // fallbackClass: 'flow-node-draggable'
                 },
@@ -93,7 +93,7 @@
         components: {
             draggable
         },
-        created() {
+        created () {
             /**
              * 以下是为了解决在火狐浏览器上推拽时弹出tab页到搜索问题
              * @param event
@@ -103,16 +103,16 @@
                     // 解决火狐浏览器无法获取鼠标拖拽结束的坐标问题
                     mousePosition.left = event.layerX
                     mousePosition.top = event.clientY - 50
-                    event.preventDefault();
-                    event.stopPropagation();
+                    event.preventDefault()
+                    event.stopPropagation()
                 }
             }
         },
         methods: {
             // 根据类型获取左侧菜单对象
-            getMenuByType(type) {
+            getMenuByType (type) {
                 for (let i = 0; i < this.menuList.length; i++) {
-                    let children = this.menuList[i].children;
+                    let children = this.menuList[i].children
                     for (let j = 0; j < children.length; j++) {
                         if (children[j].type === type) {
                             return children[j]
@@ -121,18 +121,18 @@
                 }
             },
             // 拖拽开始时触发
-            move(evt, a, b, c) {
+            move (evt, a, b, c) {
                 var type = evt.item.attributes.type.nodeValue
                 this.nodeMenu = this.getMenuByType(type)
             },
             // 拖拽结束时触发
-            end(evt, e) {
+            end (evt, e) {
                 this.$emit('addNode', evt, this.nodeMenu, mousePosition)
             },
             // 是否是火狐浏览器
-            isFirefox() {
+            isFirefox () {
                 var userAgent = navigator.userAgent
-                if (userAgent.indexOf("Firefox") > -1) {
+                if (userAgent.indexOf('Firefox') > -1) {
                     return true
                 }
                 return false

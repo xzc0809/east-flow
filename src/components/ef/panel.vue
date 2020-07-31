@@ -24,6 +24,12 @@
             </el-col>
         </el-row>
         <div style="display: flex;height: calc(100% - 47px);">
+          <div style="width: 280px;border-right: 1px solid #dce3e8;">
+            <nodeCard></nodeCard>
+          </div>
+<!--          <el-button @click="drawer = true" type="primary" style="margin-left: 16px;">-->
+<!--            点我打开-->
+<!--          </el-button>-->
             <div style="width: 230px;border-right: 1px solid #dce3e8;">
                 <node-menu @addNode="addNode" ref="nodeMenu"></node-menu>
             </div>
@@ -43,10 +49,17 @@
                 <!-- 给画布一个默认的宽度和高度 -->
                 <div style="position:absolute;top: 2000px;left: 2000px;">&nbsp;</div>
             </div>
-            <!-- 右侧表单 -->
-            <div style="width: 300px;border-left: 1px solid #dce3e8;background-color: #FBFBFB">
+            <el-drawer
+                      title="我是标题"
+                      :visible.sync="drawer"
+                      :direction="direction"
+                      :with-header="false"
+                      :modal="false">
+
+            <div style="width: 500px;border-left: 1px solid #dce3e8;background-color: #FBFBFB;height: 100%" >
                 <flow-node-form ref="nodeForm" @setLineLabel="setLineLabel" @repaintEverything="repaintEverything"></flow-node-form>
             </div>
+          </el-drawer>
         </div>
         <!-- 流程数据详情 -->
         <flow-info v-if="flowInfoVisible" ref="flowInfo" :data="data"></flow-info>
@@ -63,6 +76,7 @@
     import flowNode from '@/components/ef/node'
     import nodeMenu from '@/components/ef/node_menu'
     import FlowInfo from '@/components/ef/info'
+    import nodeCard from '@/components/ef/node_card'
     import FlowNodeForm from './node_form'
     import lodash from 'lodash'
     import { getDataA } from './data_A'
@@ -71,8 +85,10 @@
     import { getDataD } from './data_D'
 
     export default {
-        data() {
+        data () {
             return {
+                drawer: false,
+                direction: 'rtl',
                 // jsPlumb 实例
                 jsPlumb: null,
                 // 控制画布销毁
@@ -99,11 +115,11 @@
         // 一些基础配置移动该文件中
         mixins: [easyFlowMixin],
         components: {
-            draggable, flowNode, nodeMenu, FlowInfo, FlowNodeForm
+            draggable, flowNode, nodeMenu, FlowInfo, FlowNodeForm, nodeCard
         },
         directives: {
             'flowDrag': {
-                bind(el, binding, vnode, oldNode) {
+                bind (el, binding, vnode, oldNode) {
                     if (!binding) {
                         return
                     }
@@ -138,7 +154,7 @@
                 }
             }
         },
-        mounted() {
+        mounted () {
             this.jsPlumb = jsPlumb.getInstance()
             this.$nextTick(() => {
                 // 默认加载流程A的数据、在这里可以根据具体的业务返回符合流程数据格式的数据即可
@@ -147,15 +163,15 @@
         },
         methods: {
             // 返回唯一标识
-            getUUID() {
+            getUUID () {
                 return Math.random().toString(36).substr(3, 10)
             },
-            jsPlumbInit() {
+            jsPlumbInit () {
                 this.jsPlumb.ready(() => {
                     // 导入默认配置
                     this.jsPlumb.importDefaults(this.jsplumbSetting)
                     // 会使整个jsPlumb立即重绘。
-                    this.jsPlumb.setSuspendDrawing(false, true);
+                    this.jsPlumb.setSuspendDrawing(false, true)
                     // 初始化节点
                     this.loadEasyFlow()
                     // 单点击了连接线, https://www.cnblogs.com/ysx215/p/7615677.html
@@ -170,7 +186,7 @@
                         })
                     })
                     // 连线
-                    this.jsPlumb.bind("connection", (evt) => {
+                    this.jsPlumb.bind('connection', (evt) => {
                         let from = evt.source.id
                         let to = evt.target.id
                         if (this.loadEasyFlowFinish) {
@@ -179,22 +195,22 @@
                     })
 
                     // 删除连线回调
-                    this.jsPlumb.bind("connectionDetached", (evt) => {
+                    this.jsPlumb.bind('connectionDetached', (evt) => {
                         this.deleteLine(evt.sourceId, evt.targetId)
                     })
 
                     // 改变线的连接节点
-                    this.jsPlumb.bind("connectionMoved", (evt) => {
+                    this.jsPlumb.bind('connectionMoved', (evt) => {
                         this.changeLine(evt.originalSourceId, evt.originalTargetId)
                     })
 
                     // 连线右击
-                    this.jsPlumb.bind("contextmenu", (evt) => {
+                    this.jsPlumb.bind('contextmenu', (evt) => {
                         console.log('contextmenu', evt)
                     })
 
                     // 连线
-                    this.jsPlumb.bind("beforeDrop", (evt) => {
+                    this.jsPlumb.bind('beforeDrop', (evt) => {
                         let from = evt.sourceId
                         let to = evt.targetId
                         if (from === to) {
@@ -206,7 +222,7 @@
                             return false
                         }
                         if (this.hashOppositeLine(from, to)) {
-                            this.$message.error('不支持两个节点之间连线回环');
+                            this.$message.error('不支持两个节点之间连线回环')
                             return false
                         }
                         this.$message.success('连接成功')
@@ -214,14 +230,14 @@
                     })
 
                     // beforeDetach
-                    this.jsPlumb.bind("beforeDetach", (evt) => {
+                    this.jsPlumb.bind('beforeDetach', (evt) => {
                         console.log('beforeDetach', evt)
                     })
                     this.jsPlumb.setContainer(this.$refs.efContainer)
                 })
             },
             // 加载流程图
-            loadEasyFlow() {
+            loadEasyFlow () {
                 // 初始化节点
                 for (var i = 0; i < this.data.nodeList.length; i++) {
                     let node = this.data.nodeList[i]
@@ -244,7 +260,7 @@
                         label: line.label ? line.label : '',
                         connector: line.connector ? line.connector : '',
                         anchors: line.anchors ? line.anchors : undefined,
-                        paintStyle: line.paintStyle ? line.paintStyle : undefined,
+                        paintStyle: line.paintStyle ? line.paintStyle : undefined
                     }
                     this.jsPlumb.connect(connParam, this.jsplumbConnectOptions)
                 }
@@ -252,7 +268,7 @@
                     this.loadEasyFlowFinish = true
                 })
             },
-            setLineLabel(from, to, label) {
+            setLineLabel (from, to, label) {
                 var conn = this.jsPlumb.getConnections({
                     source: from,
                     target: to
@@ -264,17 +280,16 @@
                     conn.addClass('flowLabel')
                 }
                 conn.setLabel({
-                    label: label,
+                    label: label
                 })
                 this.data.lineList.forEach(function (line) {
                     if (line.from == from && line.to == to) {
                         line.label = label
                     }
                 })
-
             },
             // 删除激活的元素
-            deleteElement() {
+            deleteElement () {
                 if (this.activeElement.type === 'node') {
                     this.deleteNode(this.activeElement.nodeId)
                 } else if (this.activeElement.type === 'line') {
@@ -293,7 +308,7 @@
                 }
             },
             // 删除线
-            deleteLine(from, to) {
+            deleteLine (from, to) {
                 this.data.lineList = this.data.lineList.filter(function (line) {
                     if (line.from == from && line.to == to) {
                         return false
@@ -302,11 +317,11 @@
                 })
             },
             // 改变连线
-            changeLine(oldFrom, oldTo) {
+            changeLine (oldFrom, oldTo) {
                 this.deleteLine(oldFrom, oldTo)
             },
             // 改变节点的位置
-            changeNodeSite(data) {
+            changeNodeSite (data) {
                 for (var i = 0; i < this.data.nodeList.length; i++) {
                     let node = this.data.nodeList[i]
                     if (node.id === data.nodeId) {
@@ -321,14 +336,14 @@
              * @param nodeMenu 被添加的节点对象
              * @param mousePosition 鼠标拖拽结束的坐标
              */
-            addNode(evt, nodeMenu, mousePosition) {
+            addNode (evt, nodeMenu, mousePosition) {
                 var screenX = evt.originalEvent.clientX, screenY = evt.originalEvent.clientY
                 let efContainer = this.$refs.efContainer
                 var containerRect = efContainer.getBoundingClientRect()
                 var left = screenX, top = screenY
                 // 计算是否拖入到容器中
                 if (left < containerRect.x || left > containerRect.width + containerRect.x || top < containerRect.y || containerRect.y > containerRect.y + containerRect.height) {
-                    this.$message.error("请把节点拖入到画布中")
+                    this.$message.error('请把节点拖入到画布中')
                     return
                 }
                 left = left - containerRect.x + efContainer.scrollLeft
@@ -381,7 +396,7 @@
              * 删除节点
              * @param nodeId 被删除节点的ID
              */
-            deleteNode(nodeId) {
+            deleteNode (nodeId) {
                 this.$confirm('确定要删除节点' + nodeId + '?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
@@ -400,19 +415,21 @@
                         return true
                     })
                     this.$nextTick(function () {
-                        this.jsPlumb.removeAllEndpoints(nodeId);
+                        this.jsPlumb.removeAllEndpoints(nodeId)
                     })
                 }).catch(() => {
                 })
                 return true
             },
-            clickNode(nodeId) {
+            clickNode (nodeId) {
                 this.activeElement.type = 'node'
                 this.activeElement.nodeId = nodeId
+                this.drawer = true
                 this.$refs.nodeForm.nodeInit(this.data, nodeId)
+                // console.log('hello')
             },
             // 是否具有该线
-            hasLine(from, to) {
+            hasLine (from, to) {
                 for (var i = 0; i < this.data.lineList.length; i++) {
                     var line = this.data.lineList[i]
                     if (line.from === from && line.to === to) {
@@ -422,28 +439,28 @@
                 return false
             },
             // 是否含有相反的线
-            hashOppositeLine(from, to) {
+            hashOppositeLine (from, to) {
                 return this.hasLine(to, from)
             },
-            nodeRightMenu(nodeId, evt) {
+            nodeRightMenu (nodeId, evt) {
                 this.menu.show = true
                 this.menu.curNodeId = nodeId
                 this.menu.left = evt.x + 'px'
                 this.menu.top = evt.y + 'px'
             },
-            repaintEverything() {
+            repaintEverything () {
                 console.log('重绘')
                 this.jsPlumb.repaint()
             },
             // 流程数据信息
-            dataInfo() {
+            dataInfo () {
                 this.flowInfoVisible = true
                 this.$nextTick(function () {
                     this.$refs.flowInfo.init()
                 })
             },
             // 加载流程图
-            dataReload(data) {
+            dataReload (data) {
                 this.easyFlowVisible = false
                 this.data.nodeList = []
                 this.data.lineList = []
@@ -460,22 +477,22 @@
                 })
             },
             // 模拟载入数据dataA
-            dataReloadA() {
+            dataReloadA () {
                 this.dataReload(getDataA())
             },
             // 模拟载入数据dataB
-            dataReloadB() {
+            dataReloadB () {
                 this.dataReload(getDataB())
             },
             // 模拟载入数据dataC
-            dataReloadC() {
+            dataReloadC () {
                 this.dataReload(getDataC())
             },
             // 模拟载入数据dataD
-            dataReloadD() {
+            dataReloadD () {
                 this.dataReload(getDataD())
             },
-            zoomAdd() {
+            zoomAdd () {
                 if (this.zoom >= 1) {
                     return
                 }
@@ -483,7 +500,7 @@
                 this.$refs.efContainer.style.transform = `scale(${this.zoom})`
                 this.jsPlumb.setZoom(this.zoom)
             },
-            zoomSub() {
+            zoomSub () {
                 if (this.zoom <= 0) {
                     return
                 }
@@ -492,20 +509,20 @@
                 this.jsPlumb.setZoom(this.zoom)
             },
             // 下载数据
-            downloadData() {
+            downloadData () {
                 this.$confirm('确定要下载该流程数据吗？', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning',
                     closeOnClickModal: false
                 }).then(() => {
-                    var datastr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(this.data, null, '\t'));
+                    var datastr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(this.data, null, '\t'))
                     var downloadAnchorNode = document.createElement('a')
-                    downloadAnchorNode.setAttribute("href", datastr);
-                    downloadAnchorNode.setAttribute("download", 'data.json')
-                    downloadAnchorNode.click();
-                    downloadAnchorNode.remove();
-                    this.$message.success("正在下载中,请稍后...")
+                    downloadAnchorNode.setAttribute('href', datastr)
+                    downloadAnchorNode.setAttribute('download', 'data.json')
+                    downloadAnchorNode.click()
+                    downloadAnchorNode.remove()
+                    this.$message.success('正在下载中,请稍后...')
                 }).catch(() => {
                 })
             }

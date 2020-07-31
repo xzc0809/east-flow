@@ -62,6 +62,6 @@ var data_D = {
     ]
 }
 
-export function getDataD() {
+export function getDataD () {
     return data_D
 }

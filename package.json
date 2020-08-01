@@ -3,7 +3,7 @@
   "version": "2.2.2",
   "description": "简单易用的流程图",
   "author": "1537130693@qq.com",
-  "private": false,
+  "private": true,
   "scripts": {
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
     "start": "npm run dev",
@@ -75,5 +75,9 @@
     "> 1%",
     "last 2 versions",
     "not ie <= 8"
-  ]
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xzc0809/east-flow.git"
+  }
 }

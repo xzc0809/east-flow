@@ -24,8 +24,16 @@
             </el-col>
         </el-row>
         <div style="display: flex;height: calc(100% - 47px);">
+<!--          <nodeCard></nodeCard>-->
           <div style="width: 280px;border-right: 1px solid #dce3e8;">
-            <nodeCard></nodeCard>
+            <template v-for="card in data.cardList">
+            <nodeCard
+              :id="card.id"
+              :key="card.id"
+              :title="card.title"
+              :card="card">
+            </nodeCard>
+            </template>
           </div>
 <!--          <el-button @click="drawer = true" type="primary" style="margin-left: 16px;">-->
 <!--            点我打开-->
@@ -33,6 +41,9 @@
             <div style="width: 230px;border-right: 1px solid #dce3e8;">
                 <node-menu @addNode="addNode" ref="nodeMenu"></node-menu>
             </div>
+          <div style="width: 230px;border-right: 1px solid #dce3e8;">
+            <nav-menu @addNode="addNode" ref="nodeMenu"></nav-menu>
+          </div>
             <div id="efContainer" ref="efContainer" class="container" v-flowDrag>
                 <template v-for="node in data.nodeList">
                     <flow-node
@@ -77,12 +88,14 @@
     import nodeMenu from '@/components/ef/node_menu'
     import FlowInfo from '@/components/ef/info'
     import nodeCard from '@/components/ef/node_card'
+    import navMenu from  '@/components/ef/navMenu'
     import FlowNodeForm from './node_form'
     import lodash from 'lodash'
     import { getDataA } from './data_A'
     import { getDataB } from './data_B'
     import { getDataC } from './data_C'
     import { getDataD } from './data_D'
+    import { getDataCard } from './data_card'
 
     export default {
         data () {
@@ -115,7 +128,7 @@
         // 一些基础配置移动该文件中
         mixins: [easyFlowMixin],
         components: {
-            draggable, flowNode, nodeMenu, FlowInfo, FlowNodeForm, nodeCard
+            draggable, flowNode, nodeMenu, FlowInfo, FlowNodeForm, nodeCard ,navMenu
         },
         directives: {
             'flowDrag': {
@@ -421,13 +434,7 @@
                 })
                 return true
             },
-            clickNode (nodeId) {
-                this.activeElement.type = 'node'
-                this.activeElement.nodeId = nodeId
-                this.drawer = true
-                this.$refs.nodeForm.nodeInit(this.data, nodeId)
-                // console.log('hello')
-            },
+
             // 是否具有该线
             hasLine (from, to) {
                 for (var i = 0; i < this.data.lineList.length; i++) {
@@ -525,7 +532,14 @@
                     this.$message.success('正在下载中,请稍后...')
                 }).catch(() => {
                 })
-            }
+            },
+          clickNode (nodeId) {
+            this.activeElement.type = 'node'
+            this.activeElement.nodeId = nodeId
+            this.drawer = true
+            this.$refs.nodeForm.nodeInit(this.data, nodeId)
+            // console.log('hello')
+          },
         }
     }
 </script>

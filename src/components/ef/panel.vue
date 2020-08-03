@@ -14,6 +14,22 @@
 <!--                    <el-divider direction="vertical"></el-divider>-->
 <!--                    <el-button type="text" icon="el-icon-minus" size="large" @click="zoomSub"></el-button>-->
                     <div style="float: right;margin-right: 5px">
+
+<!--                        <el-dialog title="编辑"  width="30%">-->
+<!--                          <el-form ref="form" :model="form" label-width="70px">-->
+<!--                            <el-form-item label="用户名">-->
+<!--                              <el-input v-model="form.name"></el-input>-->
+<!--                            </el-form-item>-->
+<!--                            <el-form-item label="地址">-->
+<!--                              <el-input v-model="form.address"></el-input>-->
+<!--                            </el-form-item>-->
+<!--                          </el-form>-->
+<!--                          <span slot="footer" class="dialog-footer">-->
+<!--                  <el-button @click="editVisible = false">取 消</el-button>-->
+<!--                  <el-button type="primary" @click="saveEdit">确 定</el-button>-->
+<!--                          </span>-->
+<!--                        </el-dialog>-->
+                        <el-button plain round icon="el-icon-document" @click="dataInfo" size="mini">新增流程</el-button>
                         <el-button plain round icon="el-icon-document" @click="dataInfo" size="mini">流程信息</el-button>
                         <el-button plain round @click="dataReloadA" icon="el-icon-refresh" size="mini">切换流程A</el-button>
                         <el-button plain round @click="dataReloadB" icon="el-icon-refresh" size="mini">切换流程B</el-button>
@@ -24,15 +40,14 @@
             </el-col>
         </el-row>
         <div style="display: flex;height: calc(100% - 47px);">
+
 <!--          <nodeCard></nodeCard>-->
           <div style="width: 280px;border-right: 1px solid #dce3e8;">
-            <template v-for="card in data.cardList">
-            <nodeCard
-              :id="card.id"
-              :key="card.id"
-              :title="card.title"
-              :card="card">
-            </nodeCard>
+            <template v-for="card in data.cardList" >
+              <span>{{card.id}}</span>
+<!--            <nodeCard>-->
+
+<!--            </nodeCard>-->
             </template>
           </div>
 <!--          <el-button @click="drawer = true" type="primary" style="margin-left: 16px;">-->
@@ -41,9 +56,9 @@
             <div style="width: 230px;border-right: 1px solid #dce3e8;">
                 <node-menu @addNode="addNode" ref="nodeMenu"></node-menu>
             </div>
-          <div style="width: 230px;border-right: 1px solid #dce3e8;">
-            <nav-menu @addNode="addNode" ref="nodeMenu"></nav-menu>
-          </div>
+<!--          <div style="width: 230px;border-right: 1px solid #dce3e8;">-->
+<!--            <nav-menu @addNode="addNode" ref="nodeMenu"></nav-menu>-->
+<!--          </div>-->
             <div id="efContainer" ref="efContainer" class="container" v-flowDrag>
                 <template v-for="node in data.nodeList">
                     <flow-node
@@ -60,17 +75,19 @@
                 <!-- 给画布一个默认的宽度和高度 -->
                 <div style="position:absolute;top: 2000px;left: 2000px;">&nbsp;</div>
             </div>
-            <el-drawer
-                      title="我是标题"
-                      :visible.sync="drawer"
-                      :direction="direction"
-                      :with-header="false"
-                      :modal="false">
+<!--            <el-drawer-->
+<!--                      title="我是标题"-->
+<!--                      :visible.sync="drawer"-->
+<!--                      :direction="direction"-->
+<!--                      :with-header="false"-->
+<!--                      :modal="false"-->
+<!--                      :modal-append-to-body="false"-->
+<!--            >-->
 
             <div style="width: 500px;border-left: 1px solid #dce3e8;background-color: #FBFBFB;height: 100%" >
                 <flow-node-form ref="nodeForm" @setLineLabel="setLineLabel" @repaintEverything="repaintEverything"></flow-node-form>
             </div>
-          </el-drawer>
+<!--          </el-drawer>-->
         </div>
         <!-- 流程数据详情 -->
         <flow-info v-if="flowInfoVisible" ref="flowInfo" :data="data"></flow-info>
@@ -96,7 +113,7 @@
     import { getDataC } from './data_C'
     import { getDataD } from './data_D'
     import { getDataCard } from './data_card'
-
+    const axios = require('axios');
     export default {
         data () {
             return {
@@ -122,7 +139,9 @@
                     sourceId: undefined,
                     targetId: undefined
                 },
-                zoom: 0.5
+                zoom: 0.5,
+                editVisible: false,
+                nodeId:null
             }
         },
         // 一些基础配置移动该文件中
@@ -176,8 +195,29 @@
         },
         methods: {
             // 返回唯一标识
-            getUUID () {
-                return Math.random().toString(36).substr(3, 10)
+           getUUID () {
+              var data = null;
+              axios({
+                method: 'get',
+                url: '/flow/getNodeId',
+
+                // params:{
+                //   id : 1
+                // }
+              }).then(function(response){
+                  data = response.data+'';
+                  console.log(data)
+                  return response.data+'';
+              }).then(data =>{
+                  data = response.data+'';
+                  console.log(data)
+                  return response.data+'';
+              }).catch(function (error) {
+                console.log(error)
+              });
+              // return +'';
+                // return Math.random().toString(36).substr(3, 10)
+              return data;
             },
             jsPlumbInit () {
                 this.jsPlumb.ready(() => {
@@ -197,13 +237,14 @@
                             to: conn.targetId,
                             label: conn.getLabel()
                         })
+                        this.drawer=true;
                     })
                     // 连线
                     this.jsPlumb.bind('connection', (evt) => {
                         let from = evt.source.id
                         let to = evt.target.id
                         if (this.loadEasyFlowFinish) {
-                            this.data.lineList.push({from: from, to: to})
+                            this.data.lineList.push({from: from, to: to ,sourceNode: from ,targetNoe: to})
                         }
                     })
 
@@ -298,6 +339,8 @@
                 this.data.lineList.forEach(function (line) {
                     if (line.from == from && line.to == to) {
                         line.label = label
+                        line.linkName = label
+
                     }
                 })
             },
@@ -365,6 +408,7 @@
                 left -= 85
                 top -= 16
                 var nodeId = this.getUUID()
+                console.log(nodeId)
                 // 动态生成名字
                 var origName = nodeMenu.name
                 var nodeName = origName
@@ -384,6 +428,7 @@
                     }
                     break
                 }
+                /**拖动节点到画布*/
                 var node = {
                     id: nodeId,
                     name: nodeName,
@@ -391,7 +436,10 @@
                     left: left + 'px',
                     top: top + 'px',
                     ico: nodeMenu.ico,
-                    state: 'success'
+                    state: 'success',
+                    nodeName: nodeName,
+                    xCoordinate: left,
+                    yCoordinate: top,
                 }
                 /**
                  * 这里可以进行业务判断、是否能够添加该节点

@@ -1,6 +1,7 @@
 var data_A = {
+    flow:{},
     name: '流程A',
-    nodeList: [{}],
+    nodeList: [],
     //     {
     //         id: 'nodeA',
     //         name: '流程A-节点A',
@@ -29,14 +30,9 @@ var data_A = {
     //         ico: 'el-icon-present'
     //     }
     // ],
-    lineList: [{
-        from: '1',
-        to: '2'
-    }, {
-        from: '2',
-        to: '3'
-    }]
+    lineList: [{}]
 }
+var data_flow = {flow:{}}
 const axios = require('axios');
 export function getDataA(){
     axios({
@@ -48,30 +44,36 @@ export function getDataA(){
       // headers: {'Origin': '127.0.0.1'}
     }).then(function(response){
       var data = response.data;
-      console.log(response.data.nodeList);
-      // data_A.nodeList = data.nodeList;
+      // console.log(response.data.nodeList);
+      console.log(data);
       var nodeList = data.nodeList;
-      // var nodeList2 = [{
-      //           id :'',
-      //           name :'',
-      //           content :'',
-      //           type :'',
-      //           left :'',
-      //           top :'',
-      //           ico :'',
-      //           state :''
-      // }];
-      // for (var i=0;i<nodeList.length;i++){
-      //     nodeList[i].id = nodeList[i].nodeId;
-      //     nodeList[i].name = nodeList[i].nodeName;
-      //     nodeList[i].left = nodeList[i].xCoordinate+'px';
-      //     nodeList[i].top = nodeList[i].yCoordinate+'px';
-      //     nodeList[i].type = 'task';
-      //     nodeList[i].ico =  'el-icon-present';
-      //     nodeList2[i].state = 'success';
-      // }
+      var lineList = data.lineList;
+
+      for (var i=0;i<nodeList.length;i++){
+          nodeList[i].id =nodeList[i].nodeId+'';
+          nodeList[i].name = nodeList[i].nodeName;
+          nodeList[i].left = nodeList[i].xCoordinate+'px';
+          nodeList[i].top = nodeList[i].yCoordinate+'px';
+          nodeList[i].type = 'task';
+          nodeList[i].ico =  'el-icon-present';
+          nodeList[i].state = 'success';
+          // nodeList[i].from = nodeList[i].sourceNode;
+          // nodeList[i].to = nodeList[i].targetNoe;
+          // nodeList[i].label = nodeList[i].linkname;
+          // data_A.lineList[i].from = nodeList[i].sourceNode;
+          // data_A.lineList[i].to = nodeList[i].targetNoe;
+          // data_A.lineList[i].label = nodeList[i].linkname;
+      }
+      for (var i= 0;i<lineList.length;i++){
+        lineList[i].from = lineList[i].sourceNode+'';
+        lineList[i].to = lineList[i].targetNoe+'';
+        lineList[i].label = lineList[i].linkName;
+      }
       data_A.nodeList = nodeList;
-      console.log(nodeList2);
+      data_A.lineList = lineList;
+      // data_flow.flow = data.flow;
+      data_A.flow = data.flow;
+      // console.log(data_flow.flow)
 
     }).catch(function (error) {
       console.log(error)
@@ -79,7 +81,7 @@ export function getDataA(){
   return data_A;
 }
 
-// export function getDataA () {
-//     get()
-//     return data_A
-// }
+export function getDataFlow () {
+    // get()
+    return data_flow;
+}

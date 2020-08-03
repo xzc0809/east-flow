@@ -35,6 +35,7 @@
                     <el-form-item>
                         <el-button icon="el-icon-close">重置</el-button>
                         <el-button type="primary" icon="el-icon-check" @click="save">保存</el-button>
+                      <el-button type="primary" icon="el-icon-check" @click="commit">提交</el-button>
                     </el-form-item>
                 </el-form>
 
@@ -42,6 +43,9 @@
                     <el-form-item label="条件">
                         <el-input v-model="line.label"></el-input>
                     </el-form-item>
+                  <el-form-item label="关键词">
+                    <el-input v-model="line.keyWords"></el-input>
+                  </el-form-item>
                     <el-form-item>
                         <el-button icon="el-icon-close">重置</el-button>
                         <el-button type="primary" icon="el-icon-check" @click="saveLine">保存</el-button>
@@ -56,6 +60,7 @@
 
 <script>
     import { cloneDeep } from 'lodash'
+    const axios = require('axios');
 
     export default {
         data () {
@@ -81,7 +86,8 @@
                     value: '5',
                     label: '北京烤鸭'
                 }],
-                value: ''
+                value: '',
+                flow: {}
             }
         },
         methods: {
@@ -109,14 +115,63 @@
             },
             save () {
                 this.data.nodeList.filter((node) => {
+                  /**数据参考*/
+                  // nodeList[i].id =nodeList[i].nodeId+'';
+                  // nodeList[i].name = nodeList[i].nodeName;
+                  // nodeList[i].left = nodeList[i].xCoordinate+'px';
+                  // nodeList[i].top = nodeList[i].yCoordinate+'px';
+                  // nodeList[i].type = 'task';
+                  // nodeList[i].ico =  'el-icon-present';
+                  // nodeList[i].state = 'success';
                     if (node.id === this.node.id) {
                         node.name = this.node.name
                         node.content = this.node.content
                         node.left = this.node.left
                         node.top = this.node.top
+                        node.xCoordinate = this.node.left.substring(0,this.node.left.length-2)
+                        node.yCoordinate = this.node.top.substring(0,this.node.top.length-2)
+                        node.nodeName = this.node.name
+                        node.nodeId = this.node.id;
                         this.$emit('repaintEverything')
+                        console.log(this.data)
+                      // axios({
+                      //   method: 'post',
+                      //   url: '/flow/list',
+                      //   params:{
+                      //     id : node.id
+                      //   }
+                      //   // headers: {'Origin': '127.0.0.1'}
+                      // }).then(function(response){
+                      //
+                      // }).catch(function (error) {
+                      //   console.log(error)
+                      // });
                     }
                 })
+            },
+            commit (){
+              this.data.nodeList.filter((node) => {
+                if (node.id === this.node.id) {
+                  node.name = this.node.name
+                  node.content = this.node.content
+                  node.left = this.node.left
+                  node.top = this.node.top
+                  this.$emit('repaintEverything')
+                  var data = this.data;
+                  // console.log(t)
+                }
+                // console.log(this.$emit('getDataFlow'))
+                axios({
+                  method: 'post',
+                  url: '/flow/update',
+                  data: data,
+                  // headers: {'Origin': '127.0.0.1'}
+                }).then(function(response){
+                   console.log(response);
+                }).catch(function (error) {
+                  console.log(error)
+                });
+              })
             }
         }
     }

@@ -76,7 +76,9 @@
                 this.$emit('changeNodeSite', {
                     nodeId: this.node.id,
                     left: this.$refs.node.style.left,
-                    top: this.$refs.node.style.top
+                    top: this.$refs.node.style.top,
+                    // xCoordinate: this.node.left,
+                    // yCoordinate: this.node.top
                 })
             }
         }

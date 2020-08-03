@@ -2,7 +2,7 @@
 <!--  <div ref="card">-->
   <el-card class="box-card" shadow="hover">
     <div slot="header" class="clearfix">
-<!--      <span style="font-size: 20px">{{card.title}}</span>-->
+      <span style="font-size: 20px">{{card.title}}</span>
     </div>
     <div v-for="o in 4" :key="o" class="text item">
       {{'列表内容 ' + o }}

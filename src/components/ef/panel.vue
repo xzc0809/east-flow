@@ -14,8 +14,8 @@
 <!--                    <el-divider direction="vertical"></el-divider>-->
 <!--                    <el-button type="text" icon="el-icon-minus" size="large" @click="zoomSub"></el-button>-->
                     <div style="float: right;margin-right: 5px">
-
-<!--                        <el-dialog title="编辑"  width="30%">-->
+                        <el-button>
+                        <el-dialog title="编辑"  width="30%">
 <!--                          <el-form ref="form" :model="form" label-width="70px">-->
 <!--                            <el-form-item label="用户名">-->
 <!--                              <el-input v-model="form.name"></el-input>-->
@@ -28,7 +28,8 @@
 <!--                  <el-button @click="editVisible = false">取 消</el-button>-->
 <!--                  <el-button type="primary" @click="saveEdit">确 定</el-button>-->
 <!--                          </span>-->
-<!--                        </el-dialog>-->
+                        </el-dialog>
+                        </el-button>
                         <el-button plain round icon="el-icon-document" @click="dataInfo" size="mini">新增流程</el-button>
                         <el-button plain round icon="el-icon-document" @click="dataInfo" size="mini">流程信息</el-button>
                         <el-button plain round @click="dataReloadA" icon="el-icon-refresh" size="mini">切换流程A</el-button>
@@ -231,8 +232,6 @@
                         this.activeElement.type = 'line'
                         this.activeElement.sourceId = conn.sourceId
                         this.activeElement.targetId = conn.targetId
-                      var c = conn.getParameters();
-                        console.log(conn.source)
                         this.$refs.nodeForm.lineInit({
                             from: conn.sourceId,
                             to: conn.targetId,
@@ -318,13 +317,10 @@
                         label: line.label ? line.label : '',
                         connector: line.connector ? line.connector : '',
                         anchors: line.anchors ? line.anchors : undefined,
-                        paintStyle: line.paintStyle ? line.paintStyle : undefined,
+                        paintStyle: line.paintStyle ? line.paintStyle : undefined
                     }
-                    console.log(this.jsplumbConnectOptions);
-                   // line.linkType, line.keyWords,
-                    var conn = this.jsPlumb.connect(connParam, this.jsplumbConnectOptions)
-                    conn.linkType = line.linkType;
-                    conn.keyWords = line.keyWords;
+                    this.jsPlumb.connect(connParam,this.jsplumbConnectOptions)
+
                 }
                 this.$nextTick(function () {
                     this.loadEasyFlowFinish = true

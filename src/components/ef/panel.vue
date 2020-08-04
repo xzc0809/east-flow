@@ -14,43 +14,52 @@
 <!--                    <el-divider direction="vertical"></el-divider>-->
 <!--                    <el-button type="text" icon="el-icon-minus" size="large" @click="zoomSub"></el-button>-->
                     <div style="float: right;margin-right: 5px">
-                        <el-button>
-                        <el-dialog title="编辑"  width="30%">
-<!--                          <el-form ref="form" :model="form" label-width="70px">-->
-<!--                            <el-form-item label="用户名">-->
-<!--                              <el-input v-model="form.name"></el-input>-->
-<!--                            </el-form-item>-->
-<!--                            <el-form-item label="地址">-->
-<!--                              <el-input v-model="form.address"></el-input>-->
-<!--                            </el-form-item>-->
-<!--                          </el-form>-->
-<!--                          <span slot="footer" class="dialog-footer">-->
-<!--                  <el-button @click="editVisible = false">取 消</el-button>-->
-<!--                  <el-button type="primary" @click="saveEdit">确 定</el-button>-->
-<!--                          </span>-->
-                        </el-dialog>
-                        </el-button>
-                        <el-button plain round icon="el-icon-document" @click="dataInfo" size="mini">新增流程</el-button>
+                        <el-button type="text" @click="dialogFormVisible = true">打开嵌套表单的 Dialog</el-button>
+                      <el-dialog title="收货地址" :visible.sync="dialogFormVisible">
+                        <el-form :model="form">
+                          <el-form-item label="模板名称" :label-width="formLabelWidth">
+                            <el-input v-model="form.name" autocomplete="off"></el-input>
+                          </el-form-item>
+<!--                          <el-form-item label="" :label-width="formLabelWidth">-->
+<!--                            <el-select v-model="form.region" placeholder="请选择活动区域">-->
+<!--                              <el-option label="区域一" value="shanghai"></el-option>-->
+<!--                              <el-option label="区域二" value="beijing"></el-option>-->
+<!--                            </el-select>-->
+<!--                          </el-form-item>-->
+                        </el-form>
+                        <div slot="footer" class="dialog-footer">
+                          <el-button @click="dialogFormVisible = false">取 消</el-button>
+                          <el-button type="primary" @click="addTemp">确 定</el-button>
+                        </div>
+                      </el-dialog>
+                      <el-button plain round icon="el-icon-document" @click="dataInfo" size="mini">新增流程</el-button>
                         <el-button plain round icon="el-icon-document" @click="dataInfo" size="mini">流程信息</el-button>
                         <el-button plain round @click="dataReloadA" icon="el-icon-refresh" size="mini">切换流程A</el-button>
                         <el-button plain round @click="dataReloadB" icon="el-icon-refresh" size="mini">切换流程B</el-button>
                         <el-button plain round @click="dataReloadC" icon="el-icon-refresh" size="mini">切换流程C</el-button>
                         <el-button plain round @click="dataReloadD" icon="el-icon-refresh" size="mini">自定义样式</el-button>
                     </div>
+
                 </div>
             </el-col>
         </el-row>
         <div style="display: flex;height: calc(100% - 47px);">
-
-<!--          <nodeCard></nodeCard>-->
-          <div style="width: 280px;border-right: 1px solid #dce3e8;">
-            <template v-for="card in data.cardList" >
-              <span>{{card.id}}</span>
-<!--            <nodeCard>-->
-
-<!--            </nodeCard>-->
+          <el-scrollbar>
+          <div style="width: 280px;border-right: 1px solid #dce3e8;"  >
+            <template v-for="card in cardList" >
+              <nodeCard
+                :id="card.id"
+                :key="card.id"
+                :card="card"
+              >
+               </nodeCard>
             </template>
+
+
+<!--              <span>{{card.id}}</span>-->
+
           </div>
+          </el-scrollbar>
 <!--          <el-button @click="drawer = true" type="primary" style="margin-left: 16px;">-->
 <!--            点我打开-->
 <!--          </el-button>-->
@@ -76,14 +85,6 @@
                 <!-- 给画布一个默认的宽度和高度 -->
                 <div style="position:absolute;top: 2000px;left: 2000px;">&nbsp;</div>
             </div>
-<!--            <el-drawer-->
-<!--                      title="我是标题"-->
-<!--                      :visible.sync="drawer"-->
-<!--                      :direction="direction"-->
-<!--                      :with-header="false"-->
-<!--                      :modal="false"-->
-<!--                      :modal-append-to-body="false"-->
-<!--            >-->
 
             <div style="width: 500px;border-left: 1px solid #dce3e8;background-color: #FBFBFB;height: 100%" >
                 <flow-node-form ref="nodeForm" @setLineLabel="setLineLabel" @repaintEverything="repaintEverything"></flow-node-form>
@@ -142,7 +143,39 @@
                 },
                 zoom: 0.5,
                 editVisible: false,
-                nodeId:null
+                nodeId:null,
+              gridData: [{
+                date: '2016-05-02',
+                name: '王小虎',
+                address: '上海市普陀区金沙江路 1518 弄'
+              }, {
+                date: '2016-05-04',
+                name: '王小虎',
+                address: '上海市普陀区金沙江路 1518 弄'
+              }, {
+                date: '2016-05-01',
+                name: '王小虎',
+                address: '上海市普陀区金沙江路 1518 弄'
+              }, {
+                date: '2016-05-03',
+                name: '王小虎',
+                address: '上海市普陀区金沙江路 1518 弄'
+              }],
+              dialogTableVisible: false,
+              dialogFormVisible: false,
+              form: {
+                name: '',
+                region: '',
+                date1: '',
+                date2: '',
+                delivery: false,
+                type: [],
+                resource: '',
+                desc: ''
+              },
+              formLabelWidth: '120px',
+              cardList:[]
+
             }
         },
         // 一些基础配置移动该文件中
@@ -165,7 +198,6 @@
                         let disX = e.clientX
                         let disY = e.clientY
                         el.style.cursor = 'move'
-
                         document.onmousemove = function (e) {
                             // 移动时禁止默认事件
                             e.preventDefault()
@@ -191,10 +223,34 @@
             this.jsPlumb = jsPlumb.getInstance()
             this.$nextTick(() => {
                 // 默认加载流程A的数据、在这里可以根据具体的业务返回符合流程数据格式的数据即可
-                this.dataReload(getDataB())
+                this.dataReload(getDataA())
+              this.getDataCard2();
             })
+
         },
         methods: {
+          //新增模板
+          addTemp(){
+            // console.log(this.form.name)
+            let name = this.form.name;
+            axios({
+              method: 'post',
+              url: '/flow/add',
+              params:{
+                flowName : name
+              }
+            }).then((response)=>{
+              // this.getDataCard2();
+              // this.getDataCard2();
+              // var data = response.data;
+              // console.log(data)
+              // resolve(data);
+              // return response.data+'';
+            }).catch(function (error) {
+              // reject(error);
+              console.log(error)
+            })
+          },
             // 返回唯一标识
            getUUID () {
              return new Promise((resolve, reject) => {
@@ -217,6 +273,20 @@
                });
              })
               // return data;
+            },
+            getDataCard2(){
+
+                axios({
+                  method: 'get',
+                  url: '/flow/cards',
+                }).then((response)=>{
+
+                   this.cardList = response.data.data.records;
+                   // console.log(response.data)
+                }).catch(function (error) {
+                  // reject(error);
+                  console.log(error)
+                });
             },
             jsPlumbInit () {
                 this.jsPlumb.ready(() => {
@@ -319,7 +389,9 @@
                         anchors: line.anchors ? line.anchors : undefined,
                         paintStyle: line.paintStyle ? line.paintStyle : undefined
                     }
-                    this.jsPlumb.connect(connParam,this.jsplumbConnectOptions)
+                    var conn = this.jsPlumb.connect(connParam,this.jsplumbConnectOptions)
+                    conn.linkType = line.linkType;
+                    conn.keyWords = line.keyWords;
 
                 }
                 this.$nextTick(function () {

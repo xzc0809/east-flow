@@ -32,21 +32,14 @@ var data_card = {
       top: '161px',
       ico: 'el-icon-present'
     }
-  ],
-  lineList: [{
-    from: 'nodeA',
-    to: 'nodeB'
-  }, {
-    from: 'nodeB',
-    to: 'nodeC'
-  }]
+  ]
 }
 
 function get(){
   // axios.get('http://192.168.30.38:8080/flow/list?id=1')
-  axios.get('http://www.kuaidi100.com/query?type=yuantong&postid=11111111111')
+  axios.get('/flow/cards')
     .then(function (response) {
-      console.log(response);
+      console.log(response.data);
     })
     .catch(function (error) {
       console.log(error);

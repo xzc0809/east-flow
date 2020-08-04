@@ -74,7 +74,7 @@ export function getDataA(){
       data_A.nodeList = nodeList;
       data_A.lineList = lineList;
       // data_flow.flow = data.flow;
-      data_A.flow = data.flow;
+      // data_A.flow = data.flow;
       console.log(data_A)
     }).catch(function (error) {
       console.log(error)

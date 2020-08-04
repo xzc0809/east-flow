@@ -231,6 +231,8 @@
                         this.activeElement.type = 'line'
                         this.activeElement.sourceId = conn.sourceId
                         this.activeElement.targetId = conn.targetId
+                      var c = conn.getParameters();
+                        console.log(conn.source)
                         this.$refs.nodeForm.lineInit({
                             from: conn.sourceId,
                             to: conn.targetId,
@@ -316,9 +318,13 @@
                         label: line.label ? line.label : '',
                         connector: line.connector ? line.connector : '',
                         anchors: line.anchors ? line.anchors : undefined,
-                        paintStyle: line.paintStyle ? line.paintStyle : undefined
+                        paintStyle: line.paintStyle ? line.paintStyle : undefined,
                     }
-                    this.jsPlumb.connect(connParam, line.linkType, line.keyWords,this.jsplumbConnectOptions)
+                    console.log(this.jsplumbConnectOptions);
+                   // line.linkType, line.keyWords,
+                    var conn = this.jsPlumb.connect(connParam, this.jsplumbConnectOptions)
+                    conn.linkType = line.linkType;
+                    conn.keyWords = line.keyWords;
                 }
                 this.$nextTick(function () {
                     this.loadEasyFlowFinish = true

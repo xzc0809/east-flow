@@ -48,42 +48,66 @@
                             {
                                 id: '11',
                                 type: 'timer',
-                                name: '数据接入',
-                                ico: 'el-icon-time',
-                                // 自定义覆盖样式
-                                style: {}
-                            }, {
-                                id: '12',
-                                type: 'task',
-                                name: '接口调用',
-                                ico: 'el-icon-odometer',
+                                name: '开始节点',
+                                nodeType:0,
+                                ico: 'el-icon-caret-right',
                                 // 自定义覆盖样式
                                 style: {}
                             }
+                            // , {
+                            //     id: '12',
+                            //     type: 'task',
+                            //     name: '接口调用',
+                            //     ico: 'el-icon-caret-right',
+                            //     // 自定义覆盖样式
+                            //     style: {}
+                            // }
                         ]
                     },
+                  {
+                    id: '2',
+                    type: 'group',
+                    name: '中间流程',
+                    nodeType:2,
+                    ico: 'el-icon-video-pause',
+                    open: true,
+                    children: [
+                      {
+                        id: '21',
+                        type: 'end',
+                        name: '中间流程',
+                        nodeType:1,
+                        ico: 'el-icon-caret-right',
+                        // 自定义覆盖样式
+                        style: {}
+                      }
+                    ]
+                  },
                     {
-                        id: '2',
-                        type: 'group',
+                        id: '3',
+                        type: 'end',
                         name: '结束节点',
+                        nodeType:3,
                         ico: 'el-icon-video-pause',
                         open: true,
                         children: [
                             {
-                                id: '21',
-                                type: 'end',
+                                id: '20',
+                                type: 'over',
+                                nodeType:2,
                                 name: '流程结束',
                                 ico: 'el-icon-caret-right',
                                 // 自定义覆盖样式
                                 style: {}
-                            }, {
-                                id: '22',
-                                type: 'over',
-                                name: '数据清理',
-                                ico: 'el-icon-shopping-cart-full',
-                                // 自定义覆盖样式
-                                style: {}
                             }
+                            // , {
+                            //     id: '22',
+                            //     type: 'over',
+                            //     name: '数据清理',
+                            //     ico: 'el-icon-shopping-cart-full',
+                            //     // 自定义覆盖样式
+                            //     style: {}
+                            // }
                         ]
                     }
                 ],

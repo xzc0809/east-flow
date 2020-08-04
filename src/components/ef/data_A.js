@@ -54,7 +54,7 @@ export function getDataA(){
           nodeList[i].name = nodeList[i].nodeName;
           nodeList[i].left = nodeList[i].xCoordinate+'px';
           nodeList[i].top = nodeList[i].yCoordinate+'px';
-          nodeList[i].type = 'task';
+          nodeList[i].type = nodeList[i].type;
           nodeList[i].ico =  'el-icon-present';
           nodeList[i].state = 'success';
           // nodeList[i].from = nodeList[i].sourceNode;
@@ -68,13 +68,14 @@ export function getDataA(){
         lineList[i].from = lineList[i].sourceNode+'';
         lineList[i].to = lineList[i].targetNoe+'';
         lineList[i].label = lineList[i].linkName;
+        lineList[i].linkType = lineList[i].linkType;
+        lineList[i].keyWords = lineList[i].keyWords;
       }
       data_A.nodeList = nodeList;
       data_A.lineList = lineList;
       // data_flow.flow = data.flow;
       data_A.flow = data.flow;
-      // console.log(data_flow.flow)
-
+      console.log(data_A)
     }).catch(function (error) {
       console.log(error)
   });

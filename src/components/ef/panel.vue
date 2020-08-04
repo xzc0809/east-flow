@@ -196,28 +196,26 @@
         methods: {
             // 返回唯一标识
            getUUID () {
-              var data = null;
-              axios({
-                method: 'get',
-                url: '/flow/getNodeId',
+             return new Promise((resolve, reject) => {
+               var data = null;
+               axios({
+                 method: 'get',
+                 url: '/flow/getNodeId',
 
-                // params:{
-                //   id : 1
-                // }
-              }).then(function(response){
-                  data = response.data+'';
-                  console.log(data)
-                  return response.data+'';
-              }).then(data =>{
-                  data = response.data+'';
-                  console.log(data)
-                  return response.data+'';
-              }).catch(function (error) {
-                console.log(error)
-              });
-              // return +'';
-                // return Math.random().toString(36).substr(3, 10)
-              return data;
+                 // params:{
+                 //   id : 1
+                 // }
+               }).then((response)=>{
+                 data = response.data+'';
+                 console.log(data)
+                 resolve(data);
+                 // return response.data+'';
+               }).catch(function (error) {
+                 reject(error);
+                 console.log(error)
+               });
+             })
+              // return data;
             },
             jsPlumbInit () {
                 this.jsPlumb.ready(() => {
@@ -229,13 +227,16 @@
                     this.loadEasyFlow()
                     // 单点击了连接线, https://www.cnblogs.com/ysx215/p/7615677.html
                     this.jsPlumb.bind('click', (conn, originalEvent) => {
+                        console.log(conn)
                         this.activeElement.type = 'line'
                         this.activeElement.sourceId = conn.sourceId
                         this.activeElement.targetId = conn.targetId
                         this.$refs.nodeForm.lineInit({
                             from: conn.sourceId,
                             to: conn.targetId,
-                            label: conn.getLabel()
+                            label: conn.getLabel(),
+                            linkType:conn.linkType,
+                            keyWords:conn.keyWords
                         })
                         this.drawer=true;
                     })
@@ -243,8 +244,9 @@
                     this.jsPlumb.bind('connection', (evt) => {
                         let from = evt.source.id
                         let to = evt.target.id
+                        console.log(evt)
                         if (this.loadEasyFlowFinish) {
-                            this.data.lineList.push({from: from, to: to ,sourceNode: from ,targetNoe: to})
+                            this.data.lineList.push({from: from, to: to ,sourceNode: from ,targetNoe: to })
                         }
                     })
 
@@ -316,13 +318,13 @@
                         anchors: line.anchors ? line.anchors : undefined,
                         paintStyle: line.paintStyle ? line.paintStyle : undefined
                     }
-                    this.jsPlumb.connect(connParam, this.jsplumbConnectOptions)
+                    this.jsPlumb.connect(connParam, line.linkType, line.keyWords,this.jsplumbConnectOptions)
                 }
                 this.$nextTick(function () {
                     this.loadEasyFlowFinish = true
                 })
             },
-            setLineLabel (from, to, label) {
+            setLineLabel (from, to, label,linkType,keyWords) {
                 var conn = this.jsPlumb.getConnections({
                     source: from,
                     target: to
@@ -337,10 +339,12 @@
                     label: label
                 })
                 this.data.lineList.forEach(function (line) {
+                  console.log(line)
                     if (line.from == from && line.to == to) {
                         line.label = label
                         line.linkName = label
-
+                        line.linkType = linkType
+                        line.keyWords= keyWords
                     }
                 })
             },
@@ -407,8 +411,13 @@
                 // 居中
                 left -= 85
                 top -= 16
-                var nodeId = this.getUUID()
-                console.log(nodeId)
+                this.getUUID().then(v=>{
+                  this.nodeId = v}
+                  );
+              var nodeId =this.nodeId;
+              console.log(nodeId)
+
+              // console.log(nodeId)
                 // 动态生成名字
                 var origName = nodeMenu.name
                 var nodeName = origName
@@ -432,7 +441,7 @@
                 var node = {
                     id: nodeId,
                     name: nodeName,
-                    type: nodeMenu.type,
+                    nodeType: nodeMenu.nodeType,
                     left: left + 'px',
                     top: top + 'px',
                     ico: nodeMenu.ico,
@@ -471,6 +480,19 @@
                         if (node.id === nodeId) {
                             // 伪删除，将节点隐藏，否则会导致位置错位
                             // node.show = false
+                          axios({
+                            method: 'post',
+                            url: '/flow/delete',
+                            params:{
+                              nodeId : nodeId
+                            }
+                          }).then((response)=>{
+                            data = response.data+'';
+                            console.log(data)
+                            // return response.data+'';
+                          }).catch(function (error) {
+                            console.log(error)
+                          });
                             return false
                         }
                         return true

@@ -1,6 +1,8 @@
 <template>
-  <div ref="card">
-  <el-card class="box-card" shadow="hover">
+  <div class="box-card">
+  <div ref="card"
+       @click = "clickCard">
+  <el-card class="box-card"  :shadow.sync="shadow">
     <div slot="header" class="clearfix">
       <span style="font-size: 20px">{{card.flowName}}</span>
     </div>
@@ -10,8 +12,6 @@
     <div  class="text item">
       状态:{{ +card.state==1?'可用':'制作中'  }}
     </div>
-    <el-button style="float: left; padding: 3px 0" type="text">测试</el-button>
-    <el-button style="float: left; padding: 3px 0" type="text">话术设置</el-button>
 <!--    <el-dropdown>-->
 <!--  <span class="el-dropdown-link" style="float: right">-->
 <!--    下拉菜单<i class="el-icon-arrow-down el-icon&#45;&#45;right" ></i>-->
@@ -24,6 +24,11 @@
 <!--    </el-dropdown>-->
   </el-card>
   </div>
+    <el-button style="float: left; padding: 3px 0" type="text" @click="showMsgDialog">测试</el-button>
+    <el-button style="float: left; padding: 3px 0" type="text" @click>话术设置</el-button>
+    <br/>
+    <br/>
+  </div>
 </template>
 
 <script>
@@ -35,8 +40,21 @@
         },
         data () {
           return {
+            shadow:"hover"
           }
         },
+        methods:{
+          clickCard(){
+            // console.log(this.card.id)
+            this.$emit('clickCard',this.card.id)
+            this.$emit('initCardName',this.card.flowName);
+            // this.shadow="always";
+          },
+          showMsgDialog(){
+            // console.log(e)
+            this.$emit('showMsgDialog',this.card.id)
+          }
+        }
 
     }
 

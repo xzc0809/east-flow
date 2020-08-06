@@ -15,11 +15,29 @@ module.exports = {
         target:'http://192.168.30.38:8080/',
         changeOrigin: true,
         secure: false
+      },
+      '/outboundMessage':{
+        target:'http://192.168.30.38:8080/',
+        changeOrigin: true,
+        secure: false
+      },
+      '/InboundMessageNotification':{
+        target:'http://192.168.30.38:8080/',
+        changeOrigin: true,
+        secure: false
       }
+      // ,
+      // "/api": {
+      //   target: 'https://api.ai.qq.com',
+      //   changeOrigin: true,
+      //   pathRewrite: {
+      //     '^/api': '/'
+      //   }
+      // }
     },
 
     // Various Dev Server settings
-    host: 'localhost', // can be overwritten by process.env.HOST
+    host: '192.168.30.33', // can be overwritten by process.env.HOST
     port: 8083, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
     autoOpenBrowser: false,
     errorOverlay: true,

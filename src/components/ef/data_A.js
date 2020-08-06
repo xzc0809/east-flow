@@ -30,16 +30,16 @@ var data_A = {
     //         ico: 'el-icon-present'
     //     }
     // ],
-    lineList: [{}]
+    lineList: []
 }
 var data_flow = {flow:{}}
 const axios = require('axios');
-export function getDataA(){
+export function getDataA(cardId){
     axios({
       method: 'get',
       url: '/flow/list',
       params:{
-        id : 1
+        id : cardId
       }
       // headers: {'Origin': '127.0.0.1'}
     }).then(function(response){
@@ -72,9 +72,10 @@ export function getDataA(){
         lineList[i].keyWords = lineList[i].keyWords;
       }
       data_A.nodeList = nodeList;
+      // data_A.lineList=[];
       data_A.lineList = lineList;
       // data_flow.flow = data.flow;
-      // data_A.flow = data.flow;
+      data_A.flow.id = cardId;
       console.log(data_A)
     }).catch(function (error) {
       console.log(error)

@@ -95,7 +95,7 @@
                 value: 1,
                 label: '一般'}, {
                 value: 2,
-                label: '已拒绝'
+                label: '未拒绝'
               }],
                 value: '',
                 flow: {}
@@ -123,7 +123,9 @@
             },
             // 修改连线
             saveLine () {
-                this.$emit('setLineLabel', this.line.from, this.line.to, this.line.label, this.line.lineType, this.line.keyWords)
+                console.log("saveLine")
+                console.log(this.line.keyWords)
+                this.$emit('setLineLabel', this.line.from, this.line.to, this.line.label, this.line.linkType, this.line.keyWords)
             },
             save () {
                 this.data.nodeList.filter((node) => {
@@ -144,8 +146,12 @@
                         node.yCoordinate = this.node.top.substring(0,this.node.top.length-2)
                         node.nodeName = this.node.name
                         node.nodeId = this.node.id;
-                        // node.type =
-                        this.$emit('repaintEverything')
+                        // .keyWords = this.node.keyWords;
+                        // node.linkType =this.node.linkType;
+                        // node.linkTy
+                      node.nodeType = this.node.nodeType
+                      this.$emit('repaintEverything')
+                        console.log("save")
                         console.log(this.data)
                       // axios({
                       //   method: 'post',
@@ -170,9 +176,12 @@
                   node.left = this.node.left
                   node.top = this.node.top
                   node.nodeType = this.node.nodeType
+                  // node.keyWords = this.node.keyWords
                   this.$emit('repaintEverything')
                   var data = this.data;
                   // console.log(t)
+                  console.log(data)
+
                 }
                 // console.log(this.$emit('getDataFlow'))
                 axios({

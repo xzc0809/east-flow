@@ -10,6 +10,7 @@
                 </li>
             </ul>
         </div>
+
       </el-scrollbar>
         <div class="bottom">
             <div class="line"></div>
@@ -17,7 +18,9 @@
               <el-button plain type="warning" class="send" @click="reloadMsg">重开</el-button>
                 <el-input v-model="text" placeholder="请输入聊天内容..." class="input" @keyup.enter.native="send"/>
                 <el-button plain type="info" class="send" @click="send">发送</el-button>
+              <voice></voice>
             </div>
+
         </div>
 
     </div>
@@ -29,6 +32,7 @@
     import {loadFirstMsgApi} from "@/api/ApiChat";
     import LeftItem from "@/components/LeftItem";
     import RightItem from "@/components/RightItem";
+    import voice from "@/components/voice";
     import axios from "axios";
     import {getDataA} from './ef/data_A'
 
@@ -40,7 +44,7 @@
 
     export default {
         name: "Chat",
-        components: {LeftItem, RightItem},
+        components: {LeftItem, RightItem , voice},
         data: () => {
             return {
                 text: '',

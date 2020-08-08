@@ -742,7 +742,8 @@
             // 加载流程图
             dataReload (data) {
                 this.easyFlowVisible = false
-                // this.data.nodeList = []
+
+              // this.data.nodeList = []
                 // this.data.lineList = []
                 // setTimeout(()=>{
                 //   data = lodash.cloneDeep(data)
@@ -752,8 +753,8 @@
                 // },0)
                 this.$nextTick(() => {
                     data = lodash.cloneDeep(data)
-                    this.easyFlowVisible = true
-                    this.data = data
+                  this.easyFlowVisible = true
+                  this.data = data
                     this.$nextTick(() => {
                         this.jsPlumb = jsPlumb.getInstance()
                         this.$nextTick(() => {

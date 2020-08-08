@@ -27,7 +27,7 @@
   </div>
 <!--    </el-scrollbar>-->
 
-    <el-button style="float: left; padding: 3px 0;margin-left: 30px" type="text" @click.native="clickCard(index)">打开流程图</el-button>
+    <el-button style="float: left; padding: 3px 0;margin-left: 30px" type="text" @click="clickCard">打开流程图</el-button>
     <el-button style="float: left; padding: 3px 0" type="text" @click="showMsgDialog">测试</el-button>
     <!--    <el-button style="float: left; padding: 3px 0" type="text" @click>话术设置</el-button>-->
     <br/>
@@ -48,12 +48,11 @@
           }
         },
         methods:{
-          clickCard(index){
+          clickCard(){
             // console.log(this.card.id)
             this.$emit('clickCard',this.card.id)
             this.$emit('initCardName',this.card.flowName);
             // this.shadow="always";
-            console.log(index)
           },
           showMsgDialog(){
             // console.log(e)

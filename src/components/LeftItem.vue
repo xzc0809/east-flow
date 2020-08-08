@@ -7,6 +7,7 @@
                 {{content}}
             </div>
             <img class="img" :src="content" v-else-if="type===2" @click="preview(content)"/>
+           <div id="allmap" v-else-if="type===3"></div>
         </div>
 
     </div>

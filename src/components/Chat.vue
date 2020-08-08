@@ -14,6 +14,7 @@
         <div class="bottom">
             <div class="line"></div>
             <div class="input-send">
+              <el-button plain type="warning" class="send" @click="reloadMsg">重开</el-button>
                 <el-input v-model="text" placeholder="请输入聊天内容..." class="input" @keyup.enter.native="send"/>
                 <el-button plain type="info" class="send" @click="send">发送</el-button>
             </div>
@@ -25,6 +26,7 @@
 <script>
     import Vue from "vue";
     import {getChatResponse} from "@/api/ApiChat";
+    import {loadFirstMsgApi} from "@/api/ApiChat";
     import LeftItem from "@/components/LeftItem";
     import RightItem from "@/components/RightItem";
     import axios from "axios";
@@ -48,7 +50,8 @@
                     type: 1,
                     content: '欢迎你！',
                     me: false
-                }]
+                }],
+                flowId:null
             }
         },
       mounted :function() {
@@ -57,6 +60,11 @@
         // })
         },
       methods: {
+          //重载会话
+            reloadMsg(){
+              this.msglist=[{id:1,type:1,content:'暂无开场白'}];
+              this.loadFirstMsg(this.flowId);
+            },
             send() {
                 if (this.text) {
                     this.msglist.push({
@@ -83,14 +91,23 @@
                 getChatResponse(messageId,text).then(res => {
                     console.log(res)
                     let content =''
+                    let type =1;
                   if (res.code===0){
-                      content=res.data;
+                      // res.data.type;
+                      if (res.data.type === 2){
+                        type = 2
+                        content =res.data.url;
+                      }else{
+                        type =1;
+                        content=res.data;
+                      }
                     }else{
+                    type =1;
                       content=res.msg;
                   }
                     this.msglist.push({
                         id: this.msglist[this.msglist.length - 1].id + 1,
-                        type: 1,
+                        type: type,
                         content: content,
                         me: false,
 
@@ -100,24 +117,35 @@
          loadFirstMsg(flowId){
             // return new Promise((resolve, reject) => {
             //   var data = null;
-              axios({
-                method: 'get',
-                url: '/outboundMessage/text',
-                params:{
-                  flowId : flowId
+           //不相等，则重新加载
+                if (this.flowId != flowId && this.flowId != null){
+                  this.flowId = flowId;
+                  this.reloadMsg();
                 }
-              }).then((response)=>{
-                var data = response.data;
-                // console.log(data)
-                // resolve(data)
-                this.msglist[0].content=data.content
-                this.messageId=data.messageId
-                // console.log(this.msglist)
-                // return data;
-              }).catch(function (error) {
-                // reject(data)
-                console.log(error)
-              });
+                this.flowId = flowId
+                loadFirstMsgApi(flowId).then(res=>{
+                  console.log(res)
+                  this.msglist[0].content=res.content;
+                  this.messageId=res.messageId
+                });
+              // axios({
+              //   method: 'get',
+              //   url: '/outboundMessage/text',
+              //   params:{
+              //     flowId : flowId
+              //   }
+              // }).then((response)=>{
+              //   var data = response.data;
+              //   // console.log(data)
+              //   // resolve(data)
+              //   this.msglist[0].content=data.content
+              //   this.messageId=data.messageId
+              //   // console.log(this.msglist)
+              //   // return data;
+              // }).catch(function (error) {
+              //   // reject(data)
+              //   console.log(error)
+              // });
             // })
 
           }

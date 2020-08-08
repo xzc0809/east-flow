@@ -1,8 +1,9 @@
 <template>
   <div class="box-card">
+    <el-scrollbar style="max-height: 200px">
   <div ref="card"
-       @click = "clickCard">
-  <el-card class="box-card"  :shadow.sync="shadow">
+       @click = "clickCard" >
+    <el-card class="box-card"  :shadow.sync="shadow">
     <div slot="header" class="clearfix">
       <span style="font-size: 20px">{{card.flowName}}</span>
     </div>
@@ -24,8 +25,11 @@
 <!--    </el-dropdown>-->
   </el-card>
   </div>
+    </el-scrollbar>
+
+    <el-button style="float: left; padding: 3px 0;margin-left: 30px" type="text" @click="clickCard">打开流程图</el-button>
     <el-button style="float: left; padding: 3px 0" type="text" @click="showMsgDialog">测试</el-button>
-    <el-button style="float: left; padding: 3px 0" type="text" @click>话术设置</el-button>
+    <!--    <el-button style="float: left; padding: 3px 0" type="text" @click>话术设置</el-button>-->
     <br/>
     <br/>
   </div>

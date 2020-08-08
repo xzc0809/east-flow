@@ -11,13 +11,17 @@
         <!-- 节点类型的图标 -->
         <div class="ef-node-left-ico flow-node-drag">
             <i :class="nodeIcoClass"></i>
-        </div>
-        <!-- 节点名称 -->
-        <div class="ef-node-text" :show-overflow-tooltip="true">
-            {{node.name}}<br/>
-            {{node.content}}
+
         </div>
 
+        <div>
+        <!-- 节点名称 -->
+        <div class="ef-node-text" :show-overflow-tooltip="true">
+            {{node.name+node.nodeId}}<br/>
+<!--          <textarea ></textarea>-->
+          {{node.content}}<br/>
+        </div>
+        </div>
       <div class="ef-node-text" :show-overflow-tooltip="true">
       </div>
       <!-- 节点状态图标 -->

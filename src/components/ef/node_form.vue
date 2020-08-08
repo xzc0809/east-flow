@@ -8,7 +8,7 @@
                 <el-form :model="node" ref="dataForm" label-width="80px" v-show="type === 'node'">
                     <el-form-item label="类型">
 <!--                        <el-input v-model="node.type" ></el-input>-->
-                      <el-select v-model="node.nodeType" placeholder="请选择" @change="changeType">
+                      <el-select v-model="node.nodeType" placeholder="请选择"  @change="save">
                         <el-option
                           v-for="item in options"
                           :key="item.value"
@@ -18,31 +18,31 @@
                       </el-select>
                     </el-form-item>
                     <el-form-item label="名称">
-                        <el-input v-model="node.name"></el-input>
+                        <el-input @keyup.native="save" v-model="node.name"></el-input>
                     </el-form-item>
                     <el-form-item label="文案内容">
-                      <el-input type="textarea" v-model="node.content"></el-input>
+                      <el-input @keyup.native="save" :autosize="{ minRows: 4, maxRows: 99}" type="textarea" v-model="node.content"></el-input>
                     </el-form-item>
                     <el-form-item label="left坐标">
-                        <el-input v-model="node.left"></el-input>
+                        <el-input @keyup.native="save" v-model="node.left"></el-input>
                     </el-form-item>
                     <el-form-item label="top坐标">
-                        <el-input v-model="node.top"></el-input>
+                        <el-input @keyup.native="save" v-model="node.top"></el-input>
                     </el-form-item>
                     <el-form-item label="ico图标">
-                        <el-input v-model="node.ico"></el-input>
+                        <el-input @keyup.native="save" v-model="node.ico"></el-input>
                     </el-form-item>
-                    <el-form-item>
-                        <el-button icon="el-icon-close">重置</el-button>
-                        <el-button type="primary" icon="el-icon-check" @click="save">保存</el-button>
-                      <el-button type="primary" icon="el-icon-check" @click="commit">提交</el-button>
-                    </el-form-item>
+<!--                    <el-form-item>-->
+<!--                        <el-button icon="el-icon-close">重置</el-button>-->
+<!--                        <el-button type="primary" icon="el-icon-check" @click="save">保存</el-button>-->
+<!--                      <el-button type="primary" icon="el-icon-check" @click="commit">提交</el-button>-->
+<!--                    </el-form-item>-->
                 </el-form>
 
                 <el-form :model="line" ref="dataForm" label-width="80px" v-show="type === 'line'">
                   <el-form-item label="类型">
                     <!--                        <el-input v-model="node.type" ></el-input>-->
-                    <el-select v-model="line.linkType" placeholder="请选择" @change="changeType">
+                    <el-select v-model="line.linkType" placeholder="请选择" @change="saveLine">
                       <el-option
                         v-for="item in options2"
                         :key="item.value"
@@ -52,15 +52,15 @@
                     </el-select>
                   </el-form-item>
                     <el-form-item label="条件">
-                      <el-input v-model="line.label"></el-input>
+                      <el-input @keyup.native="saveLine" v-model="line.label"></el-input>
                     </el-form-item>
                   <el-form-item label="关键词">
-                    <el-input v-model="line.keyWords"></el-input>
+                    <el-input @keyup.native="saveLine" v-model="line.keyWords"></el-input>
                   </el-form-item>
-                    <el-form-item>
-                        <el-button icon="el-icon-close">重置</el-button>
-                        <el-button type="primary" icon="el-icon-check" @click="saveLine">保存</el-button>
-                    </el-form-item>
+<!--                    <el-form-item>-->
+<!--                        <el-button icon="el-icon-close">重置</el-button>-->
+<!--                        <el-button type="primary" icon="el-icon-check" @click="saveLine">保存</el-button>-->
+<!--                    </el-form-item>-->
                 </el-form>
             </div>
 <!--            <div class="el-node-form-tag"></div>-->
@@ -71,6 +71,7 @@
 
 <script>
     import { cloneDeep } from 'lodash'
+    import { updateFlow} from '@/api/ApiFlowData'
     const axios = require('axios');
 
     export default {
@@ -145,7 +146,7 @@
                         node.xCoordinate = this.node.left.substring(0,this.node.left.length-2)
                         node.yCoordinate = this.node.top.substring(0,this.node.top.length-2)
                         node.nodeName = this.node.name
-                        node.nodeId = this.node.id;
+                        node.nodeId = this.node.id
                         // .keyWords = this.node.keyWords;
                         // node.linkType =this.node.linkType;
                         // node.linkTy
@@ -169,6 +170,8 @@
                 })
             },
             commit (){
+              // this.save();
+              //提交先保存
               this.data.nodeList.filter((node) => {
                 if (node.id === this.node.id) {
                   node.name = this.node.name
@@ -176,24 +179,45 @@
                   node.left = this.node.left
                   node.top = this.node.top
                   node.nodeType = this.node.nodeType
+                  node.xCoordinate = this.node.left.substring(0,this.node.left.length-2)
+                  node.yCoordinate = this.node.top.substring(0,this.node.top.length-2)
+                  node.nodeId = this.node.id
                   // node.keyWords = this.node.keyWords
                   this.$emit('repaintEverything')
                   var data = this.data;
                   // console.log(t)
                   console.log(data)
-
                 }
+                //提交到上级模块
+                // this.$emit('commitFlow',data);
                 // console.log(this.$emit('getDataFlow'))
-                axios({
-                  method: 'post',
-                  url: '/flow/update',
-                  data: data,
-                  // headers: {'Origin': '127.0.0.1'}
-                }).then(function(response){
-                   console.log(response);
-                }).catch(function (error) {
+
+                updateFlow(data).then(res=>{
+                  if (res.code==0){
+                    this.$message.success(res.msg);
+                  }else{
+                    this.$message.error("失败");
+
+                  }
+                }).catch(error=>{
+                  // this.$message.error("error")
                   console.log(error)
                 });
+                // axios({
+                //   method: 'post',
+                //   url: '/flow/update',
+                //   data: data,
+                //   // headers: {'Origin': '127.0.0.1'}
+                // }).then(function(response){
+                //   console.log(response.status);
+                //   // if (response.status==200){
+                //   //   return true;
+                //   // }else{
+                //   //   return false;
+                //   // }
+                // }).catch(function (error) {
+                //   console.log(error)
+                // });
               })
             },
             changeType (e){

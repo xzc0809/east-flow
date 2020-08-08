@@ -1,5 +1,6 @@
 import request from "@/api/base/request";
 import md5 from 'js-md5';
+import axios from 'axios'
 
 export function getChatResponse(value,text) {
     return request({
@@ -7,6 +8,14 @@ export function getChatResponse(value,text) {
        url:'/InboundMessageNotification/sip?'+getChatParams(value,text),
       method: 'get'
     })
+}
+
+export function loadFirstMsgApi(flowId) {
+  return request({
+    // url:'fcgi-bin/nlp/nlp_textchat?'+getChatParams(text),
+    url:'/outboundMessage/text?flowId='+flowId,
+    method: 'get'
+  })
 }
 
 // function getChatParams(messageId,text) {

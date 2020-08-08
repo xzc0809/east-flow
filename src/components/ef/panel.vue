@@ -9,13 +9,13 @@
                     <el-button type="text" icon="el-icon-delete" size="large" @click="deleteElement" :disabled="!this.activeElement.type"></el-button>
                     <el-divider direction="vertical"></el-divider>
                     <el-button type="text" icon="el-icon-download" size="large" @click="downloadData"></el-button>
-<!--                    <el-divider direction="vertical"></el-divider>-->
+                    <el-divider direction="vertical"></el-divider>
 <!--                    <el-button type="text" icon="el-icon-plus" size="large" @click="zoomAdd"></el-button>-->
 <!--                    <el-divider direction="vertical"></el-divider>-->
 <!--                    <el-button type="text" icon="el-icon-minus" size="large" @click="zoomSub"></el-button>-->
                     <div style="float: right;margin-right: 68%">
                       <el-button type="primary" icon="el-icon-add" @click="dialogFormVisible = true">新增模板</el-button>
-<!--                      <el-button type="primary" icon="el-icon-check" @click="commit">提交流程修改</el-button>-->
+                      <el-button type="primary" icon="el-icon-check" @click="commitFlow">提交流程修改</el-button>
                       <el-dialog title="新增模板" :visible.sync="dialogFormVisible" style="height: 100%">
                         <el-form :model="form">
                           <el-form-item label="模板名称" :label-width="formLabelWidth">
@@ -45,7 +45,8 @@
             </el-col>
         </el-row>
         <div style="display: flex;height: calc(100% - 47px);">
-          <el-scrollbar v-infinite-scroll="loadCardList">
+<!--          <el-scrollbar v-infinite-scroll="loadCardList">-->
+<!--          <ul v-infinite-scroll="getDataCard2">-->
           <div style="width: 280px;border-right: 1px solid #dce3e8;"  >
             <template v-for="card in cardList" >
               <nodeCard
@@ -55,15 +56,18 @@
                 @initCardName="initCardName"
               >
                </nodeCard>
+
+<!--                <loadFirstMsg ref="loadFirstMsg"></loadFirstMsg>-->
             </template>
             <el-dialog title="测试模板" :visible.sync="isShowMsgDialog" style="height:100%">
-                <chat style="max-height: 360px"
+                <Chat style="max-height: 360px"
                  ref="chat"
-                ></chat>
+                ></Chat>
             </el-dialog>
 
           </div>
-          </el-scrollbar>
+<!--          </ul>-->
+<!--          </el-scrollbar>-->
             <div style="width: 130px;border-right: 1px solid #dce3e8;">
                 <node-menu @addNode="addNode" ref="nodeMenu"></node-menu>
             </div>
@@ -114,10 +118,16 @@
     import Chat from '@/components/Chat'
     import lodash from 'lodash'
     import { getDataA } from './data_A'
-    import { getDataB } from './data_B'
+    import { getDataB } from './data_A'
     import { getDataC } from './data_C'
     import { getDataD } from './data_D'
+    import { getFlowData} from '@/api/ApiFlowData'
+    import { getNodeId} from '@/api/ApiFlowData'
+
+
+    // import inf from '@/components/ef/inf'
     import { getDataCard } from './data_card'
+    import Node from './node'
     const axios = require('axios');
     export default {
         data () {
@@ -186,6 +196,7 @@
         // 一些基础配置移动该文件中
         mixins: [easyFlowMixin],
         components: {
+          Node,
             draggable, flowNode, nodeMenu, FlowInfo, FlowNodeForm, nodeCard ,navMenu ,Chat
         },
         directives: {
@@ -228,6 +239,7 @@
             this.jsPlumb = jsPlumb.getInstance()
             this.$nextTick(() => {
                 // 默认加载流程A的数据、在这里可以根据具体的业务返回符合流程数据格式的数据即可
+
                 this.dataReload(getDataA())
               this.getDataCard2();
             })
@@ -237,18 +249,34 @@
           loadCardList () {
 
           },
-          commitFlow (data) {
-            console.log("commitFlow");
-            console.log(data);
+          commitFlow () {
+            console.log("commitFlow")
+            if (this.$refs.nodeForm.commit()){
+              this.$notify({
+                title: '成功',
+                message: '这是一条成功的提示消息',
+                type: 'success'
+              });
+            }else{
+
+            }
           },
           showMsgDialog (cardId) {
             this.isShowMsgDialog = true;
-            this.$refs.chat.loadFirstMsg(cardId);
+            setTimeout(()=>{
+              this.$refs.chat.loadFirstMsg(cardId)
+            },30);
+
             // })
 
           },
           clickCard (cardId) {
-            this.dataReload(getDataA(cardId))
+            getFlowData(cardId).then(res=>{
+              // this.dataReload(getDataA(res))
+              this.dataReload(getDataB(res,cardId))
+
+            });
+            // this.dataReload(getDataA(cardId))
           },
           initCardName(flowName){
             this.flowName = flowName;
@@ -279,26 +307,32 @@
            getUUID () {
              return new Promise((resolve, reject) => {
                var data = null;
-               axios({
-                 method: 'get',
-                 url: '/flow/getNodeId',
-
-                 // params:{
-                 //   id : 1
-                 // }
-               }).then((response)=>{
-                 data = response.data+'';
-                 console.log(data)
-                 if (data == null){
-                   this.getUUID();
-                   return;
-                 }
-                 resolve(data);
-                 // return response.data+'';
-               }).catch(function (error) {
+               getNodeId().then(res=>{
+                 data=res+''
+                 resolve(data)
+               }).catch(error=>{
                  reject(error);
-                 console.log(error)
-               });
+               })
+               // axios({
+               //   method: 'get',
+               //   url: '/flow/getNodeId',
+               //
+               //   // params:{
+               //   //   id : 1
+               //   // }
+               // }).then((response)=>{
+               //   data = response.data+'';
+               //   console.log(data)
+               //   // if (data == null){
+               //   //   this.getUUID();
+               //   //   return;
+               //   // }
+               //   resolve(data);
+               //   // return response.data+'';
+               // }).catch(function (error) {
+               //   reject(error);
+               //   console.log(error)
+               // });
              })
               // return data;
             },
@@ -366,6 +400,7 @@
 
                     // 连线
                     this.jsPlumb.bind('beforeDrop', (evt) => {
+                        console.log(evt)
                         let from = evt.sourceId
                         let to = evt.targetId
                         if (from === to) {
@@ -518,10 +553,18 @@
                 // 居中
                 left -= 85
                 top -= 16
+                var nodeId = this.nodeId;
+                getNodeId().then(res=>{
+                  console.log("getNodeId");
+                  this.nodeId=res;
+                  console.log(res)
+                  console.log("getNodeId");
+
+                })
                 this.getUUID().then(v=>{
                   this.nodeId = v}
                   );
-              var nodeId =this.nodeId;
+               nodeId =this.nodeId;
               console.log(nodeId)
 
               // console.log(nodeId)
@@ -552,6 +595,7 @@
                     left: left + 'px',
                     top: top + 'px',
                     ico: nodeMenu.ico,
+                    nodeId:nodeId,
                     state: 'success',
                     nodeName: nodeName,
                     xCoordinate: left,
@@ -715,6 +759,7 @@
             this.activeElement.nodeId = nodeId
             this.drawer = true
             this.$refs.nodeForm.nodeInit(this.data, nodeId)
+            // this.$refs.nodeForm.save();
             // console.log('hello')
           },
         }

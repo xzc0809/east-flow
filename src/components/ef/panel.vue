@@ -47,7 +47,13 @@
         <div style="display: flex;height: calc(100% - 47px);">
 <!--          <el-scrollbar v-infinite-scroll="loadCardList">-->
 <!--          <ul v-infinite-scroll="getDataCard2">-->
+
           <div style="width: 280px;border-right: 1px solid #dce3e8;overflow:auto" v-infinite-scroll="loadCardList" >
+            <div style="margin-top: 15px;">
+              <el-input type="text" v-model="form.cardName">
+                <el-button slot="append" icon="el-icon-search" @click="searchCard"></el-button>
+              </el-input>
+            </div>
             <template v-for="card in cardList" >
               <nodeCard
                 :card="card"
@@ -58,6 +64,7 @@
                </nodeCard>
 <!--                <loadFirstMsg ref="loadFirstMsg"></loadFirstMsg>-->
             </template>
+
             <el-dialog title="测试模板" :visible.sync="isShowMsgDialog" style="height:100%">
                 <Chat style="max-height: 360px"
                  ref="chat"
@@ -97,6 +104,7 @@
             </div>
 <!--          </el-drawer>-->
         </div>
+
         <!-- 流程数据详情 -->
         <flow-info v-if="flowInfoVisible" ref="flowInfo" :data="data"></flow-info>
     </div>
@@ -124,9 +132,11 @@
     import { getFlowData} from '@/api/ApiFlowData'
     import { getNodeId} from '@/api/ApiFlowData'
     import { getCardsByCurrent} from '@/api/ApiFlowData'
-
+    import { getCardFirstOne} from '@/api/ApiFlowData'
+    import { searchCard} from '@/api/ApiFlowData'
     // import inf from '@/components/ef/inf'
     import { getDataCard } from './data_card'
+
     import Node from './node'
     const axios = require('axios');
     export default {
@@ -185,14 +195,16 @@
                 delivery: false,
                 type: [],
                 resource: '',
-                desc: ''
+                desc: '',
+                cardName: ''
               },
               formLabelWidth: '120px',
               cardList:[],
               isShowMsgDialog :false,
               current:0,
               totalPage:1,
-              loading:true
+              loading:true,
+              noMore:false
 
             }
         },
@@ -242,14 +254,27 @@
             this.jsPlumb = jsPlumb.getInstance()
             this.$nextTick(() => {
                 // 默认加载流程A的数据、在这里可以根据具体的业务返回符合流程数据格式的数据即可
-                // getDataCard()
-                this.dataReload(getDataB())
+              getCardFirstOne().then(res=>{
+                var id = res.data.records[0].id;
+                var flowName =res.data.records[0].flowName;
+                getFlowData(id).then(res=>{
+                  this.dataReload(getDataB(res,id))
+                  this.flowName = flowName
+                });
+              })
+
             })
-            return this.loading || this.noMore
           // this.current =0;
           // this.loa;
         },
         methods: {
+          searchCard() {
+            alert(this.form.cardName)
+            // var me = this;
+            // var cardName= this.form.cardName;
+            this.cardList = this.cardList.filter(function (card) {
+            })
+          },
           loadCardList () {
               this.current=this.current+1
               this.getDataCard2(this.current);
@@ -279,7 +304,6 @@
             getFlowData(cardId).then(res=>{
               // this.dataReload(getDataA(res))
               this.dataReload(getDataB(res,cardId))
-
             });
             // this.dataReload(getDataA(cardId))
           },
@@ -718,8 +742,14 @@
             // 加载流程图
             dataReload (data) {
                 this.easyFlowVisible = false
-                this.data.nodeList = []
-                this.data.lineList = []
+                // this.data.nodeList = []
+                // this.data.lineList = []
+                // setTimeout(()=>{
+                //   data = lodash.cloneDeep(data)
+                //   this.easyFlowVisible = true
+                //   this.data = data
+                //
+                // },0)
                 this.$nextTick(() => {
                     data = lodash.cloneDeep(data)
                     this.easyFlowVisible = true

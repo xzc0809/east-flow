@@ -45,6 +45,29 @@ export function getCardsByCurrent(current){
     }
   })
 }
+
+export function getCardFirstOne(){
+  return request({
+    // url:'fcgi-bin/nlp/nlp_textchat?'+getChatParams(text),
+    method: 'get',
+    url: '/flow/cards',
+    params:{
+      size:1
+    }
+  })
+}
+
+export function searchCard(name){
+  return request({
+    // url:'fcgi-bin/nlp/nlp_textchat?'+getChatParams(text),
+    method: 'post',
+    url: '/flow/searhCard',
+    params:{
+      text:name
+    }
+  })
+}
+
 function getChatParams(value,text) {
   let messageId = value;
   let content = text;

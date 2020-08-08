@@ -4,7 +4,7 @@
             <!--顶部工具菜单-->
             <el-col :span="24">
                 <div class="ef-tooltar">
-                    <el-link type="primary" :underline="false">{{data.flowName}}</el-link>
+                    <el-link type="primary" :underline="false" >{{flowName}}</el-link>
                     <el-divider direction="vertical"></el-divider>
                     <el-button type="text" icon="el-icon-delete" size="large" @click="deleteElement" :disabled="!this.activeElement.type"></el-button>
                     <el-divider direction="vertical"></el-divider>
@@ -13,7 +13,7 @@
 <!--                    <el-button type="text" icon="el-icon-plus" size="large" @click="zoomAdd"></el-button>-->
 <!--                    <el-divider direction="vertical"></el-divider>-->
 <!--                    <el-button type="text" icon="el-icon-minus" size="large" @click="zoomSub"></el-button>-->
-                    <div style="float: right;margin-right: 68%">
+                    <div style="float: right;margin-right: 57%">
                       <el-button type="primary" icon="el-icon-add" @click="dialogFormVisible = true">新增模板</el-button>
                       <el-button type="primary" icon="el-icon-check" @click="commitFlow">提交流程修改</el-button>
                       <el-dialog title="新增模板" :visible.sync="dialogFormVisible" style="height: 100%">
@@ -47,7 +47,7 @@
         <div style="display: flex;height: calc(100% - 47px);">
 <!--          <el-scrollbar v-infinite-scroll="loadCardList">-->
 <!--          <ul v-infinite-scroll="getDataCard2">-->
-          <div style="width: 280px;border-right: 1px solid #dce3e8;"  >
+          <div style="width: 280px;border-right: 1px solid #dce3e8;overflow:auto" v-infinite-scroll="loadCardList" >
             <template v-for="card in cardList" >
               <nodeCard
                 :card="card"
@@ -56,7 +56,6 @@
                 @initCardName="initCardName"
               >
                </nodeCard>
-
 <!--                <loadFirstMsg ref="loadFirstMsg"></loadFirstMsg>-->
             </template>
             <el-dialog title="测试模板" :visible.sync="isShowMsgDialog" style="height:100%">
@@ -64,7 +63,8 @@
                  ref="chat"
                 ></Chat>
             </el-dialog>
-
+            <p v-if="loading">加载中...</p>
+            <p v-if="noMore">没有更多了....</p>
           </div>
 <!--          </ul>-->
 <!--          </el-scrollbar>-->
@@ -123,7 +123,7 @@
     import { getDataD } from './data_D'
     import { getFlowData} from '@/api/ApiFlowData'
     import { getNodeId} from '@/api/ApiFlowData'
-
+    import { getCardsByCurrent} from '@/api/ApiFlowData'
 
     // import inf from '@/components/ef/inf'
     import { getDataCard } from './data_card'
@@ -189,7 +189,10 @@
               },
               formLabelWidth: '120px',
               cardList:[],
-              isShowMsgDialog :false
+              isShowMsgDialog :false,
+              current:0,
+              totalPage:1,
+              loading:true
 
             }
         },
@@ -239,16 +242,18 @@
             this.jsPlumb = jsPlumb.getInstance()
             this.$nextTick(() => {
                 // 默认加载流程A的数据、在这里可以根据具体的业务返回符合流程数据格式的数据即可
-
-                this.dataReload(getDataA())
-              this.getDataCard2();
+                // getDataCard()
+                this.dataReload(getDataB())
             })
-
+            return this.loading || this.noMore
+          // this.current =0;
+          // this.loa;
         },
         methods: {
           loadCardList () {
-
-          },
+              this.current=this.current+1
+              this.getDataCard2(this.current);
+            },
           commitFlow () {
             console.log("commitFlow")
             if (this.$refs.nodeForm.commit()){
@@ -279,6 +284,7 @@
             // this.dataReload(getDataA(cardId))
           },
           initCardName(flowName){
+            console.log(flowName)
             this.flowName = flowName;
           },
           //新增模板
@@ -336,19 +342,41 @@
              })
               // return data;
             },
-            getDataCard2(){
+            getDataCard2(current){
+              if (current ==1 ){
+                this.cardList = [] ;
+              }
+              setTimeout(()=>{
+                getCardsByCurrent(current).then(res=>{
+                  //获取总页数
+                  this.totalPage = Math.ceil(res.data.total/10.0);
+                  if (this.current>=this.totalPage){
+                    this.loading = false;
+                    this.noMore = true;
+                  }
+                  // this.cardList.push(res.data.records);
+                  for(var i=0;i<res.data.records.length;i++){
+                    this.cardList.push(res.data.records[i])
+                  }
+                  // this.cardList=this.cardList.append();
+                  console.log(this.cardList);
+                })
+              },200)
 
-                axios({
-                  method: 'get',
-                  url: '/flow/cards',
-                }).then((response)=>{
-
-                   this.cardList = response.data.data.records;
-                   // console.log(response.data)
-                }).catch(function (error) {
-                  // reject(error);
-                  console.log(error)
-                });
+                // axios({
+                //   method: 'get',
+                //   url: '/flow/cards',
+                //   params:{
+                //     current:2
+                //   }
+                // }).then((response)=>{
+                //
+                //    this.cardList = response.data.data.records;
+                //    // console.log(response.data)
+                // }).catch(function (error) {
+                //   // reject(error);
+                //   console.log(error)
+                // });
             },
             jsPlumbInit () {
                 this.jsPlumb.ready(() => {

@@ -35,7 +35,16 @@ export function updateFlow(data) {
 //   })
 // }
 
-
+export function getCardsByCurrent(current){
+  return request({
+    // url:'fcgi-bin/nlp/nlp_textchat?'+getChatParams(text),
+    method: 'get',
+    url: '/flow/cards',
+    params:{
+      current:current
+    }
+  })
+}
 function getChatParams(value,text) {
   let messageId = value;
   let content = text;

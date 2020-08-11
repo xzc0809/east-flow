@@ -85,9 +85,6 @@
                 <el-button size="small" type="primary" icon="el-icon-location-outline"></el-button>
                 <!--                <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>-->
               </el-upload>
-
-
-
                 <el-button plain type="info" class="send" @click="send(1)">发送</el-button>
             </div>
 
@@ -153,7 +150,7 @@
             console.log(res.data)
             var url = "http://192.168.30.38:8080/download?fileName="+res.data.url;
             this.text = url;
-            this.send(res.type)
+            this.send(res.data.type)
           },
           // uploadVoiceSuccess(res){
           //   var url = "http://192.168.30.38:8080/download?fileName="+res.data.url;

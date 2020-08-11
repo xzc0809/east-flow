@@ -112,14 +112,17 @@
     color: #565758;
     font-size: 12px;
     line-height: 32px;
-    margin-left: 8px;
+    margin-left: 5px;
     width: 100px;
+    height: 100%;
     /* 设置超出宽度文本显示方式*/
-    white-space: nowrap;
+    /*white-space: nowrap;*/
     /*文本隐藏*/
     /*overflow: hidden;*/
-    text-overflow: ellipsis;
+    /*text-overflow: ellipsis;*/
     text-align: center;
+    word-break: break-all;
+    ;overflow:hidden;
 }
 .ef-node-text2 {
   color: #565758;

@@ -190,23 +190,12 @@
               if (node.id === this.node.id) {
                 // node.resource.resourceId=res.data.resourceId
                 node.resource.url = res.data.url;
-                node.resource.type = res.type;
+                node.resource.type = res.data.type;
                 // this.save();
                 this.$emit('repaintEverything')
               }
             })
           },
-          // uploadVoiceSuccess(res){
-          //   var url = "http://192.168.30.38:8080/download?fileName="+res.data.url;
-          //   this.data.nodeList.filter((node) => {
-          //     if (node.id === this.node.id) {
-          //       // node.resource.resourceId=res.data.resourceId
-          //       node.resource.url = res.data.url;
-          //       node.resource.type = 3
-          //       this.$emit('repaintEverything')
-          //     }
-          //   })
-          // },
           handleRemove(file, fileList) {
             console.log(file, fileList);
           },

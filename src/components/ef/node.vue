@@ -16,10 +16,9 @@
 
         <div>
         <!-- 节点名称 -->
-        <div class="ef-node-text" :show-overflow-tooltip="true">
+        <div class="ef-node-text" :show-overflow-tooltip="true" >
             {{node.name+node.nodeId}}<br/>
-<!--          <textarea ></textarea>-->
-          {{node.resource.url}}<br/>
+            {{node.resource.url}}
         </div>
         </div>
       <div class="ef-node-text" :show-overflow-tooltip="true">

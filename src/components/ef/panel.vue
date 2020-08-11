@@ -650,7 +650,8 @@
                     break
                 }
                 /**拖动节点到画布*/
-                var node = {
+
+                  var node = {
                     id: nodeId,
                     name: nodeName,
                     nodeType: nodeMenu.nodeType,
@@ -658,15 +659,21 @@
                     top: top + 'px',
                     ico: nodeMenu.ico,
                     nodeId:nodeId,
+                    resource:{
+                      id:'',
+                      url:''
+                    },
                     state: 'success',
                     nodeName: nodeName,
                     xCoordinate: left,
                     yCoordinate: top,
-                }
+                  }
+
+
                 /**
                  * 这里可以进行业务判断、是否能够添加该节点
                  */
-                this.data.nodeList.push(node)
+              this.data.nodeList.push(node)
                 this.$nextTick(function () {
                     this.jsPlumb.makeSource(nodeId, this.jsplumbSourceOptions)
                     this.jsPlumb.makeTarget(nodeId, this.jsplumbTargetOptions)

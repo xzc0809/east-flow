@@ -6,10 +6,18 @@
             <div class="text" v-if="type===1" style="word-break: break-all;">
                 {{content}}
             </div>
-            <img class="img" :src="content" v-else-if="type===2"/>
+            <ele-gallery
+              :source="content" v-else-if="type===2"
+            ></ele-gallery>
             <div id="allmap" v-else-if="type===3">
               <m-audio :src="content" :show-duration="true"></m-audio>
             </div>
+          <div id="video" v-else-if="type===4">
+            <ele-gallery
+              source="https://vod-dpy.bhbcdn.com/cv-vod_b323de_1554893977654.mp4"
+              type="video"
+            ></ele-gallery>
+          </div>
         </div>
     </div>
 </template>

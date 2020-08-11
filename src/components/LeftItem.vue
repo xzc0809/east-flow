@@ -13,8 +13,9 @@
            <div id="allmap" v-else-if="type===3">
                 <m-audio :src=content :showDuration="true" :block="true"></m-audio>
            </div>
-          <div id="amapDemo" v-else-if="type===5">
-            <el-amap vid="amapDemo"  :center="center" :map-manager="amapManager" :zoom="zoom" :events="events" class="amap-demo">
+          <div id="amapDemo" class="text" v-else-if="type===5">
+<!--            {{content}}-->
+            <el-amap :vid="amap-Demo"  :center="center" :map-manager="amapManager" :zoom="zoom" :events="events" class="amap-demo" style="width: 600px;height: 380px">
             </el-amap>
           </div>
           <div id="video" v-else-if="type===4">
@@ -22,24 +23,7 @@
               source="https://vod-dpy.bhbcdn.com/cv-vod_b323de_1554893977654.mp4"
               type="video"
             ></ele-gallery>
-<!--            <move-video-->
-<!--              :itemid=content-->
-<!--              class = "video-playback"-->
-<!--              icon-width = "48px"-->
-<!--              icon-height = "51px"-->
-<!--              videoWidth = "281px"-->
-<!--              videoHeight = "100%"-->
-<!--              :full-screen = "false"-->
-<!--              :init-icon = "initIcon"-->
-<!--              :controls = "false"-->
-<!--              :load-icon = "loadIcon"-->
-<!--              video-url = "https://vod-dpy.bhbcdn.com/cv-vod_b323de_1554893977654.mp4"-->
-<!--              image-url = "https://img-dpy.bhbcdn.com/cv-img_b1d731_1554894122628.jpg"-->
-<!--            />-->
           </div>
-
-<!--          <el-amap vid="amapDemo"  :center="center" :map-manager="amapManager" :zoom="zoom" :events="events" class="amap-demo" style="height: 280px;width: 600px">-->
-<!--          </el-amap>-->
         </div>
 
     </div>

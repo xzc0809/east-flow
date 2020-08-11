@@ -9,6 +9,11 @@ import '@/components/ef/index.css'
 import Axios from 'axios'
 import audio from 'vue-mobile-audio'
 import VueAMap from 'vue-amap';
+import moveVideo from 'move-video'
+// 全局引入
+import EleGallery from 'vue-ele-gallery'
+Vue.component(EleGallery.name, EleGallery)
+
 Vue.use(VueAMap);
 VueAMap.initAMapApiLoader({
   // 高德的key
@@ -16,9 +21,10 @@ VueAMap.initAMapApiLoader({
   // 插件集合
   plugin: ['AMap.Autocomplete', 'AMap.PlaceSearch', 'AMap.Scale', 'AMap.OverView', 'AMap.ToolBar', 'AMap.MapType', 'AMap.PolyEditor', 'AMap.CircleEditor'],
   // 高德 sdk 版本，默认为 1.4.4
-  v: '1.4.4'
+  v: '1.4.4',
+  uiVersion:'1.0.11'
 });
-
+Vue.component('moveVideo', moveVideo)
 Vue.config.productionTip = false
 Vue.use(audio)
 Vue.use(ElementUI, {size: 'small'})
@@ -35,3 +41,5 @@ new Vue({
 axios.interceptors.request.use(config => {
 return config;
 })
+
+

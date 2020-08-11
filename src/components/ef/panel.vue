@@ -66,7 +66,7 @@
             </template>
 
             <el-dialog title="测试模板" :visible.sync="isShowMsgDialog" style="height:100%">
-                <Chat style="max-height: 360px"
+                <Chat style="max-height: 860px"
                  ref="chat"
                 ></Chat>
             </el-dialog>

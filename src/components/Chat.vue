@@ -1,7 +1,7 @@
 <template>
     <div class="container" >
-      <el-scrollbar style="max-height: 500px ;overflow-x: hidden" >
-        <div class="list" id="list" ref="list" style="height: 280px" >
+      <el-scrollbar style="max-height: 1000px ;overflow-x: hidden" >
+        <div class="list" id="list" ref="list" style="height: 800px" >
             <ul>
                 <li v-for="(item,index) in msglist" :key="index">
                     <RightItem :id="item.id" :type="item.type" :content="item.content" v-if="item.me"></RightItem>
@@ -40,7 +40,7 @@
                 :on-preview="handlePreview"
                 :on-remove="handleRemove"
                 :before-remove="beforeRemove"
-                :on-success="uploadVoiceSuccess"
+                :on-success="uploadSuccess"
                 :data="type3"
                 multiple
                 :limit="3"
@@ -51,6 +51,43 @@
                 <el-button size="small" type="primary" icon="el-icon-microphone"></el-button>
                 <!--                <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>-->
               </el-upload>
+              <el-upload
+                class="upload-demo"
+                action="/upload/one"
+                :on-preview="handlePreview"
+                :on-remove="handleRemove"
+                :before-remove="beforeRemove"
+                :on-success="uploadSuccess"
+                :data="type4"
+                multiple
+                :limit="3"
+                :on-exceed="handleExceed"
+                :file-list="fileList"
+                :show-file-list="false"
+              >
+                <el-button size="small" type="primary" icon="el-icon-video-camera-solid"></el-button>
+                <!--                <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>-->
+              </el-upload>
+              <el-upload
+                class="upload-demo"
+                action="/upload/one"
+                :on-preview="handlePreview"
+                :on-remove="handleRemove"
+                :before-remove="beforeRemove"
+                :on-success="uploadSuccess"
+                :data="type5"
+                multiple
+                :limit="3"
+                :on-exceed="handleExceed"
+                :file-list="fileList"
+                :show-file-list="false"
+              >
+                <el-button size="small" type="primary" icon="el-icon-location-outline"></el-button>
+                <!--                <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>-->
+              </el-upload>
+
+
+
                 <el-button plain type="info" class="send" @click="send(1)">发送</el-button>
             </div>
 
@@ -97,6 +134,12 @@
               },
               type3: {
                 type: 3
+              },
+              type4: {
+                type: 4
+              },
+              type5: {
+                type: 5
               }
             }
         },
@@ -110,13 +153,13 @@
             console.log(res.data)
             var url = "http://192.168.30.38:8080/download?fileName="+res.data.url;
             this.text = url;
-            this.send(2)
+            this.send(res.type)
           },
-          uploadVoiceSuccess(res){
-            var url = "http://192.168.30.38:8080/download?fileName="+res.data.url;
-            this.text = url;
-            this.send(3);
-          },
+          // uploadVoiceSuccess(res){
+          //   var url = "http://192.168.30.38:8080/download?fileName="+res.data.url;
+          //   this.text = url;
+          //   this.send(3);
+          // },
           handleRemove(file, fileList) {
             console.log(file, fileList);
           },
@@ -158,6 +201,22 @@
                           me: false
                         })
                     }
+                    else if(this.text === '视频'){
+                      this.msglist.push({
+                        id: this.msglist[this.msglist.length - 1].id + 1,
+                        type: 4,
+                        content: 'http://1252014125.vod2.myqcloud.com/46740e39vodcq1252014125/1db79a9a5285890783173288539/ZOaFuTmGs30A.mp3',
+                        me: false
+                      })
+                    }
+                    else if(this.text === '位置'){
+                      this.msglist.push({
+                        id: this.msglist[this.msglist.length - 1].id + 1,
+                        type: 5,
+                        content: 'http://1252014125.vod2.myqcloud.com/46740e39vodcq1252014125/1db79a9a5285890783173288539/ZOaFuTmGs30A.mp3',
+                        me: false
+                      })
+                    }
                     else {
                         this.getResponse(this.messageId,this.text)
                     }
@@ -166,26 +225,17 @@
             },
             getResponse(messageId,text) {
                 getChatResponse(messageId,text).then(res => {
-                    console.log(res)
-                    let content =''
-                    let type =1;
-                  if (res.code===0){
-                      // res.data.type;
-                      if (res.data.type === 2){
-                        type = 2
-                        content =res.data.url;
-                      }else{
-                        type =1;
-                        content=res.data;
-                      }
+                  console.log(res)
+                    if (res.data.type!=1){
+                      var url = "http://192.168.30.38:8080/download?fileName="+res.data.url
                     }else{
-                    type =1;
-                      content=res.msg;
-                  }
+                      var url = res.data.url
+
+                    }
                     this.msglist.push({
                         id: this.msglist[this.msglist.length - 1].id + 1,
-                        type: 4,
-                        content: content,
+                        type: res.data.type,
+                        content: url,
                         me: false,
 
                     })

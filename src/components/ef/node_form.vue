@@ -54,7 +54,7 @@
                         :on-preview="handlePreview"
                         :on-remove="handleRemove"
                         :before-remove="beforeRemove"
-                        :on-success="uploadVoiceSuccess"
+                        :on-success="uploadSuccess"
                         :data="type3"
                         multiple
                         :limit="3"
@@ -62,6 +62,22 @@
                         :show-file-list="false"
                       >
                         <el-button size="small" type="primary" icon="el-icon-microphone"></el-button>
+                        <!--                <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>-->
+                      </el-upload>
+                      <el-upload
+                        class="upload-demo"
+                        action="/upload/one"
+                        :on-preview="handlePreview"
+                        :on-remove="handleRemove"
+                        :before-remove="beforeRemove"
+                        :on-success="uploadSuccess"
+                        :data="type4"
+                        multiple
+                        :limit="3"
+                        :on-exceed="handleExceed"
+                        :show-file-list="false"
+                      >
+                        <el-button size="small" type="primary" icon="el-icon-video-camera-solid"></el-button>
                         <!--                <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>-->
                       </el-upload>
                     </el-form-item>
@@ -148,7 +164,10 @@
                   label: '图片'
                 }, {
                   value: 3,
-                  label: '语音'
+                  label: '语音',
+                },{
+                  value: 4,
+                  label: '视频'
                 }],
                   value: '',
                   flow: {},
@@ -157,6 +176,9 @@
                   },
                   type3:{
                     type:3
+                  },
+                  type4:{
+                    type:4
                   }
               }
         },
@@ -166,23 +188,25 @@
             var url = "http://192.168.30.38:8080/download?fileName="+res.data.url;
             this.data.nodeList.filter((node) => {
               if (node.id === this.node.id) {
+                // node.resource.resourceId=res.data.resourceId
                 node.resource.url = res.data.url;
-                node.resource.type = 2
+                node.resource.type = res.type;
                 // this.save();
                 this.$emit('repaintEverything')
               }
             })
           },
-          uploadVoiceSuccess(res){
-            var url = "http://192.168.30.38:8080/download?fileName="+res.data.url;
-            this.data.nodeList.filter((node) => {
-              if (node.id === this.node.id) {
-                node.resource.url = res.data.url;
-                node.resource.type = 3
-                this.$emit('repaintEverything')
-              }
-            })
-          },
+          // uploadVoiceSuccess(res){
+          //   var url = "http://192.168.30.38:8080/download?fileName="+res.data.url;
+          //   this.data.nodeList.filter((node) => {
+          //     if (node.id === this.node.id) {
+          //       // node.resource.resourceId=res.data.resourceId
+          //       node.resource.url = res.data.url;
+          //       node.resource.type = 3
+          //       this.$emit('repaintEverything')
+          //     }
+          //   })
+          // },
           handleRemove(file, fileList) {
             console.log(file, fileList);
           },

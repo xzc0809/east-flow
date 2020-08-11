@@ -25,6 +25,11 @@ module.exports = {
         target:'http://192.168.30.38:8080/',
         changeOrigin: true,
         secure: false
+      },
+      '/':{
+        target:'http://192.168.30.38:8080/',
+        changeOrigin: true,
+        secure: false
       }
       // ,
       // "/api": {

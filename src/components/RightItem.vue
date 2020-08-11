@@ -7,6 +7,9 @@
                 {{content}}
             </div>
             <img class="img" :src="content" v-else-if="type===2"/>
+            <div id="allmap" v-else-if="type===3">
+              <m-audio :src="content" :show-duration="true"></m-audio>
+            </div>
         </div>
     </div>
 </template>

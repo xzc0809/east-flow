@@ -19,7 +19,7 @@
         <div class="ef-node-text" :show-overflow-tooltip="true">
             {{node.name+node.nodeId}}<br/>
 <!--          <textarea ></textarea>-->
-          {{node.content}}<br/>
+          {{node.resource.url}}<br/>
         </div>
         </div>
       <div class="ef-node-text" :show-overflow-tooltip="true">

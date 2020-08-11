@@ -46,3 +46,11 @@ function getChatParams(value,text) {
       let params = 'messageId='+messageId+'&content='+content
     return params
 }
+
+export function getImage(url) {
+  return request({
+    // url:'fcgi-bin/nlp/nlp_textchat?'+getChatParams(text),
+    url:'/download?fileName='+url,
+    method: 'get'
+  })
+}

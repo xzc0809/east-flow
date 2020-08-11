@@ -92,6 +92,9 @@ export function getDataB(data,cardId){
       nodeList[i].left = nodeList[i].xCoordinate+'px';
       nodeList[i].top = nodeList[i].yCoordinate+'px';
       nodeList[i].type = nodeList[i].type;
+      // if (nodeList[i].resource){
+      //   // nodeList[i].content = nodeList[i].resource.url
+      // }
       nodeList[i].ico =  'el-icon-present';
       nodeList[i].state = 'success';
       // nodeList[i].from = nodeList[i].sourceNode;

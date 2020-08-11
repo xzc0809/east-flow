@@ -16,9 +16,42 @@
             <div class="line"></div>
             <div class="input-send">
               <el-button plain type="warning" class="send" @click="reloadMsg">重开</el-button>
-                <el-input v-model="text" placeholder="请输入聊天内容..." class="input" @keyup.enter.native="send"/>
-                <el-button plain type="info" class="send" @click="send">发送</el-button>
-              <voice></voice>
+                <el-input v-model="text" placeholder="请输入聊天内容..." class="input" @keyup.enter.native="send(1)"/>
+              <el-upload
+                class="upload-demo"
+                action="/upload/one"
+                :on-preview="handlePreview"
+                :on-remove="handleRemove"
+                :before-remove="beforeRemove"
+                :on-success="uploadSuccess"
+                :data="type2"
+                multiple
+                :limit="3"
+                :on-exceed="handleExceed"
+                :file-list="fileList"
+                :show-file-list="false"
+                >
+                <el-button size="small" type="primary" icon="el-icon-picture"></el-button>
+<!--                <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>-->
+              </el-upload>
+              <el-upload
+                class="upload-demo"
+                action="/upload/one"
+                :on-preview="handlePreview"
+                :on-remove="handleRemove"
+                :before-remove="beforeRemove"
+                :on-success="uploadVoiceSuccess"
+                :data="type3"
+                multiple
+                :limit="3"
+                :on-exceed="handleExceed"
+                :file-list="fileList"
+                :show-file-list="false"
+              >
+                <el-button size="small" type="primary" icon="el-icon-microphone"></el-button>
+                <!--                <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>-->
+              </el-upload>
+                <el-button plain type="info" class="send" @click="send(1)">发送</el-button>
             </div>
 
         </div>
@@ -33,8 +66,10 @@
     import LeftItem from "@/components/LeftItem";
     import RightItem from "@/components/RightItem";
     import voice from "@/components/voice";
+    // import { AMapManager } from 'vue-amap';
+    import {getImage} from "@/api/ApiChat";
     import axios from "axios";
-    import {getDataA} from './ef/data_A'
+    import {getDataA} from './ef/data_A';
 
     Vue.directive('scroll', {
         inserted(el) {
@@ -47,15 +82,22 @@
         components: {LeftItem, RightItem , voice},
         data: () => {
             return {
-                text: '',
-                messageId:0,
-                msglist: [{
-                    id: 1,
-                    type: 1,
-                    content: '欢迎你！',
-                    me: false
-                }],
-                flowId:null
+              text: '',
+              messageId: 0,
+              msglist: [{
+                id: 1,
+                type: 1,
+                content: '欢迎你！',
+                me: false
+              }],
+              flowId: null,
+              fileList: [],
+              type2: {
+                type: 2
+              },
+              type3: {
+                type: 3
+              }
             }
         },
       mounted :function() {
@@ -64,16 +106,39 @@
         // })
         },
       methods: {
+          uploadSuccess(res){
+            console.log(res.data)
+            var url = "http://192.168.30.38:8080/download?fileName="+res.data.url;
+            this.text = url;
+            this.send(2)
+          },
+          uploadVoiceSuccess(res){
+            var url = "http://192.168.30.38:8080/download?fileName="+res.data.url;
+            this.text = url;
+            this.send(3);
+          },
+          handleRemove(file, fileList) {
+            console.log(file, fileList);
+          },
+          handlePreview(file) {
+            console.log(file);
+          },
+          handleExceed(files, fileList) {
+            this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
+          },
+          beforeRemove(file, fileList) {
+            return this.$confirm(`确定移除 ${ file.name }？`);
+          },
           //重载会话
             reloadMsg(){
               this.msglist=[{id:1,type:1,content:'暂无开场白'}];
               this.loadFirstMsg(this.flowId);
             },
-            send() {
+            send(type) {
                 if (this.text) {
                     this.msglist.push({
                         id: this.msglist[this.msglist.length - 1].id + 1,
-                        type: 1,
+                        type: type,
                         content: this.text,
                         me: true,
                         messageId:this.msglist[0].messageId
@@ -85,7 +150,15 @@
                             content: 'http://6emm.hxzdhn.com/img/2020/06/28/jausoellbtf.jpg',
                             me: false
                         })
-                    } else {
+                    }else if(this.text === '语音'){
+                        this.msglist.push({
+                          id: this.msglist[this.msglist.length - 1].id + 1,
+                          type: 3,
+                          content: 'http://1252014125.vod2.myqcloud.com/46740e39vodcq1252014125/1db79a9a5285890783173288539/ZOaFuTmGs30A.mp3',
+                          me: false
+                        })
+                    }
+                    else {
                         this.getResponse(this.messageId,this.text)
                     }
                     this.text = ''
@@ -111,7 +184,7 @@
                   }
                     this.msglist.push({
                         id: this.msglist[this.msglist.length - 1].id + 1,
-                        type: type,
+                        type: 4,
                         content: content,
                         me: false,
 
@@ -132,26 +205,6 @@
                   this.msglist[0].content=res.content;
                   this.messageId=res.messageId
                 });
-              // axios({
-              //   method: 'get',
-              //   url: '/outboundMessage/text',
-              //   params:{
-              //     flowId : flowId
-              //   }
-              // }).then((response)=>{
-              //   var data = response.data;
-              //   // console.log(data)
-              //   // resolve(data)
-              //   this.msglist[0].content=data.content
-              //   this.messageId=data.messageId
-              //   // console.log(this.msglist)
-              //   // return data;
-              // }).catch(function (error) {
-              //   // reject(data)
-              //   console.log(error)
-              // });
-            // })
-
           }
         }
     }

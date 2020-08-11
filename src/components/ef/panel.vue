@@ -50,7 +50,7 @@
 
           <div style="width: 280px;border-right: 1px solid #dce3e8;overflow:auto" v-infinite-scroll="loadCardList" >
             <div style="margin-top: 15px;">
-              <el-input type="text" v-model="form.cardName">
+              <el-input type="text" v-model="form.cardName" @keyup.enter.native="searchCard">
                 <el-button slot="append" icon="el-icon-search" @click="searchCard"></el-button>
               </el-input>
             </div>
@@ -258,8 +258,10 @@
                 var id = res.data.records[0].id;
                 var flowName =res.data.records[0].flowName;
                 getFlowData(id).then(res=>{
-                  this.dataReload(getDataB(res,id))
-                  this.flowName = flowName
+                  // if (this.cardList != null){
+                    this.dataReload(getDataB(res,id))
+                    this.flowName = flowName
+                  // }
                 });
               })
 
@@ -269,11 +271,19 @@
         },
         methods: {
           searchCard() {
-            alert(this.form.cardName)
+            console.log(this.form.cardName);
+            // if (searchCard === '' )
+            searchCard(this.form.cardName).then(res=>{
+              // console.log(res.data.records)
+              this.cardList =[];
+              this.current=1;
+              this.cardList =res.data.records;
+            })
+            // alert(this.form.cardName)
             // var me = this;
             // var cardName= this.form.cardName;
-            this.cardList = this.cardList.filter(function (card) {
-            })
+            // this.cardList = this.cardList.filter(function (card) {
+            // })
           },
           loadCardList () {
               this.current=this.current+1

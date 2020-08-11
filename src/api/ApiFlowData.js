@@ -60,10 +60,10 @@ export function getCardFirstOne(){
 export function searchCard(name){
   return request({
     // url:'fcgi-bin/nlp/nlp_textchat?'+getChatParams(text),
-    method: 'post',
-    url: '/flow/searhCard',
+    method: 'get',
+    url: '/flow/cards',
     params:{
-      text:name
+      flowName:name
     }
   })
 }

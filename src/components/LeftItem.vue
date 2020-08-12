@@ -13,16 +13,16 @@
            <div id="allmap" v-else-if="type===3">
                 <m-audio :src=content :showDuration="true" :block="true"></m-audio>
            </div>
-          <div id="amapDemo" class="text" v-else-if="type===5">
-<!--            {{content}}-->
-            <el-amap :vid="amap-Demo"  :center="center" :map-manager="amapManager" :zoom="zoom" :events="events" class="amap-demo" style="width: 600px;height: 380px">
-            </el-amap>
-          </div>
           <div id="video" v-else-if="type===4">
             <ele-gallery
               source="https://vod-dpy.bhbcdn.com/cv-vod_b323de_1554893977654.mp4"
               type="video"
             ></ele-gallery>
+          </div>
+          <div id="amapDemo" class="text" v-else-if="type===5">
+              {{title}}
+            <el-amap :vid="amap-Demo"  :center="getContent(content)" :map-manager="amapManager" :zoom="zoom" :events="events" class="amap-demo" style="width: 600px;height: 380px">
+            </el-amap>
           </div>
         </div>
 
@@ -54,6 +54,7 @@
             zoom: 12,
             center: [121.59996, 31.197646],
             amapManager,
+            title:'',
             events: {
               init(map) {
                 AMapUI.loadUI(['overlay/SimpleMarker'], function(SimpleMarker) {
@@ -68,13 +69,21 @@
             }
           };
         },
-        props: ['id', 'type', 'content'],
+        props: ['id', 'type', 'content','title'],
         methods: {
             initIcon(res){
               console.log(res)
             },
             preview(url){
                 ImagePreview([url])
+            },
+            getContent(content){
+              if (content){
+              var contentArray = content.split(',')
+              var center = [contentArray[1],contentArray[2]]
+                this.title = contentArray[0];
+                return center;
+              }
             }
         }
     }

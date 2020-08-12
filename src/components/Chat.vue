@@ -4,8 +4,8 @@
         <div class="list" id="list" ref="list" style="height: 800px" >
             <ul>
                 <li v-for="(item,index) in msglist" :key="index">
-                    <RightItem :id="item.id" :type="item.type" :content="item.content" v-if="item.me"></RightItem>
-                    <LeftItem :id="item.id" :type="item.type" :content="item.content" v-else></LeftItem>
+                    <RightItem :id="item.id" :type="item.type" :content="item.content" :title="item.title" v-if="item.me"></RightItem>
+                    <LeftItem :id="item.id" :type="item.type" :content="item.content" :title="item.title" v-else></LeftItem>
                     <div v-scroll style="height: 0"></div>
                 </li>
             </ul>
@@ -68,24 +68,20 @@
                 <el-button size="small" type="primary" icon="el-icon-video-camera-solid"></el-button>
                 <!--                <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>-->
               </el-upload>
-              <el-upload
-                class="upload-demo"
-                action="/upload/one"
-                :on-preview="handlePreview"
-                :on-remove="handleRemove"
-                :before-remove="beforeRemove"
-                :on-success="uploadSuccess"
-                :data="type5"
-                multiple
-                :limit="3"
-                :on-exceed="handleExceed"
-                :file-list="fileList"
-                :show-file-list="false"
-              >
-                <el-button size="small" type="primary" icon="el-icon-location-outline"></el-button>
-                <!--                <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>-->
-              </el-upload>
-                <el-button plain type="info" class="send" @click="send(1)">发送</el-button>
+              <el-popover
+                placement="bottom"
+                width="100%"
+                trigger="click"
+                content="这是一段内容,这是一段内容,这是一段内容,这是一段内容。"
+                v-model="visible">
+                <el-amap-search-box class="search-box" :search-option="searchOption" v-model="position" :on-search-result="onSearchResult"></el-amap-search-box>
+                <el-button plain type="primary" class="send" @click="sendLocation(1)" >发送位置</el-button>
+                <el-amap :vid="amap-Demo"  :center="center" :map-manager="amapManager" :zoom="zoom" :events="events" class="amap-demo" style="width: 600px;height: 380px">
+                  <el-amap-marker v-for="marker in markers" :position="marker" ></el-amap-marker>
+                </el-amap>
+                <el-button slot="reference" type="primary" icon="el-icon-location-outline" @click="visible = !visible"></el-button>
+              </el-popover>
+                <el-button plain type="info" class="send" @click="send(1)" >发送</el-button>
             </div>
 
         </div>
@@ -104,6 +100,8 @@
     import {getImage} from "@/api/ApiChat";
     import axios from "axios";
     import {getDataA} from './ef/data_A';
+    import {amapManager} from 'vue-amap'
+    import {mapSearchBox} from  '@/components/mapSearchBox'
 
     Vue.directive('scroll', {
         inserted(el) {
@@ -113,16 +111,18 @@
 
     export default {
         name: "Chat",
-        components: {LeftItem, RightItem , voice},
+        components: {LeftItem, RightItem , voice ,mapSearchBox},
         data: () => {
             return {
               text: '',
+              title: '',//位置标题
               messageId: 0,
               msglist: [{
                 id: 1,
                 type: 1,
                 content: '欢迎你！',
-                me: false
+                me: false,
+                title:'测试标题'
               }],
               flowId: null,
               fileList: [],
@@ -137,7 +137,31 @@
               },
               type5: {
                 type: 5
-              }
+              },
+              zoom: 12,
+              center: [119.30, 26.08],
+              amapManager,
+              events: {
+                init(map) {
+                  AMapUI.loadUI(['overlay/SimpleMarker'], function(SimpleMarker) {
+                    const marker = new SimpleMarker({
+                      iconLabel: 'A',
+                      iconStyle: 'red',
+                      map: map,
+                      position: map.getCenter(),
+                      visibleArrow:false
+                    });
+                  });
+                }
+              },
+              markers: [
+                [119.30, 26.08],
+              ],
+              searchOption: {
+                city: '福州',
+                citylimit: true
+              },
+              mapCenter: [119.30, 26.08]
             }
         },
       mounted :function() {
@@ -146,17 +170,37 @@
         // })
         },
       methods: {
+          sendLocation(){
+            this.text = this.center
+            if (this.center){
+            this.send(5)
+            }
+            console.log(this.center)
+          },
+          onSearchResult(pois) {
+            this.title = pois[0].name;
+            let latSum = 0;
+            let lngSum = 0;
+            if (pois.length > 0) {
+              pois.forEach(poi => {
+                let {lng, lat} = poi;
+                lngSum += lng;
+                latSum += lat;
+                this.markers=[[poi.lng, poi.lat]];
+              });
+              let center = {
+                lng: lngSum / pois.length,
+                lat: latSum / pois.length
+              };
+              this.center = [center.lng, center.lat];
+            }
+          },
           uploadSuccess(res){
             console.log(res.data)
             var url = "http://192.168.30.38:8080/download?fileName="+res.data.url;
             this.text = url;
             this.send(res.data.type)
           },
-          // uploadVoiceSuccess(res){
-          //   var url = "http://192.168.30.38:8080/download?fileName="+res.data.url;
-          //   this.text = url;
-          //   this.send(3);
-          // },
           handleRemove(file, fileList) {
             console.log(file, fileList);
           },
@@ -180,6 +224,7 @@
                         id: this.msglist[this.msglist.length - 1].id + 1,
                         type: type,
                         content: this.text,
+                        title: this.title,
                         me: true,
                         messageId:this.msglist[0].messageId
                     })
@@ -209,8 +254,9 @@
                     else if(this.text === '位置'){
                       this.msglist.push({
                         id: this.msglist[this.msglist.length - 1].id + 1,
+                        title:'位置接收测试',
                         type: 5,
-                        content: 'http://1252014125.vod2.myqcloud.com/46740e39vodcq1252014125/1db79a9a5285890783173288539/ZOaFuTmGs30A.mp3',
+                        content: [119.30, 26.08],
                         me: false
                       })
                     }
@@ -223,16 +269,16 @@
             getResponse(messageId,text) {
                 getChatResponse(messageId,text).then(res => {
                   console.log(res)
-                    if (res.data.type!=1){
+                    if (res.data.type!=1 && res.data.type!=5){
                       var url = "http://192.168.30.38:8080/download?fileName="+res.data.url
                     }else{
                       var url = res.data.url
-
                     }
                     this.msglist.push({
                         id: this.msglist[this.msglist.length - 1].id + 1,
                         type: res.data.type,
                         content: url,
+                        title:this.title,
                         me: false,
 
                     })

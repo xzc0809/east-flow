@@ -18,15 +18,40 @@
               type="video"
             ></ele-gallery>
           </div>
+          <div id="amapDemo" class="text" v-else-if="type===5">
+            {{title}}
+            <el-amap :vid="amap-Demo"  :center="content" :map-manager="amapManager" :zoom="zoom" :events="events" class="amap-demo" style="width: 600px;height: 380px">
+            </el-amap>
+          </div>
         </div>
     </div>
 </template>
 
 <script>
+  import { amapManager } from 'vue-amap'
 
     export default {
         name: "RightItem",
-        props: ['id', 'type', 'content']
+        props: ['id', 'type', 'content','title'],
+        data:()=>{
+          return{
+          zoom: 12,
+            center: [121.59996, 31.197646],
+            amapManager,
+            events: {
+            init(map) {
+              AMapUI.loadUI(['overlay/SimpleMarker'], function(SimpleMarker) {
+                const marker = new SimpleMarker({
+                  iconLabel: 'A',
+                  iconStyle: 'red',
+                  map: map,
+                  position: map.getCenter()
+                });
+              });
+            }
+          }
+          };
+      }
     }
 </script>
 

@@ -80,6 +80,19 @@
                         <el-button size="small" type="primary" icon="el-icon-video-camera-solid"></el-button>
                         <!--                <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>-->
                       </el-upload>
+                      <el-popover
+                        placement="right"
+                        width="1%"
+                        trigger="click"
+                        content="这是一段内容,这是一段内容,这是一段内容,这是一段内容。"
+                        :v-model="visible">
+                        <el-amap-search-box class="search-box" :search-option="searchOption" v-model="position" :on-search-result="onSearchResult"></el-amap-search-box>
+                                            <el-button plain type="primary" class="send" @click="saveLocation"  >确定</el-button>
+                        <el-amap :vid="amap-Demo"  :center="center" :map-manager="amapManager" :zoom="zoom" :events="events" class="amap-demo" style="width: 600px;height: 380px">
+                          <el-amap-marker v-for="marker in markers" :position="marker" ></el-amap-marker>
+                        </el-amap>
+                        <el-button slot="reference" type="primary" icon="el-icon-location-outline" @click="visible = !visible"></el-button>
+                      </el-popover>
                     </el-form-item>
 
                     <el-form-item label="left坐标">
@@ -131,6 +144,7 @@
 <script>
     import { cloneDeep } from 'lodash'
     import { updateFlow} from '@/api/ApiFlowData'
+    import {amapManager} from 'vue-amap'
     const axios = require('axios');
 
     export default {
@@ -168,6 +182,9 @@
                 },{
                   value: 4,
                   label: '视频'
+                },{
+                  value: 5,
+                  label: '位置'
                 }],
                   value: '',
                   flow: {},
@@ -179,10 +196,63 @@
                   },
                   type4:{
                     type:4
+                  },
+                zoom: 12,
+                center: [119.30, 26.08],
+                amapManager,
+                events: {
+                  init(map) {
+                    AMapUI.loadUI(['overlay/SimpleMarker'], function(SimpleMarker) {
+                      const marker = new SimpleMarker({
+                        iconLabel: 'A',
+                        iconStyle: 'red',
+                        map: map,
+                        position: map.getCenter(),
+                        visibleArrow:false
+                      });
+                    });
                   }
-              }
+                },
+                markers: [
+                  [119.30, 26.08],
+                ],
+                searchOption: {
+                  city: '福州',
+                  citylimit: true
+                },
+                mapCenter: [119.30, 26.08]
+            }
         },
         methods: {
+          saveLocation(){
+            this.data.nodeList.filter((node) => {
+              if (node.id === this.node.id) {
+                // node.resource.resourceId=res.data.resourceId
+                node.resource.url = this.title+","+this.center[0]+","+this.center[1];
+                node.resource.type = 5;
+                // this.save();
+                this.$emit('repaintEverything')
+              }
+            })
+          },
+          onSearchResult(pois) {
+            this.title = pois[0].name;
+            let latSum = 0;
+            let lngSum = 0;
+            if (pois.length > 0) {
+              pois.forEach(poi => {
+                let {lng, lat} = poi;
+                lngSum += lng;
+                latSum += lat;
+                this.markers=[[poi.lng, poi.lat]];
+              });
+              let center = {
+                lng: lngSum / pois.length,
+                lat: latSum / pois.length
+              };
+              this.center = [center.lng, center.lat];
+            }
+          },
           uploadSuccess(res){
             console.log(res)
             var url = "http://192.168.30.38:8080/download?fileName="+res.data.url;
@@ -285,24 +355,8 @@
 
                   }
                 }).catch(error=>{
-                  // this.$message.error("error")
                   console.log(error)
                 });
-                // axios({
-                //   method: 'post',
-                //   url: '/flow/update',
-                //   data: data,
-                //   // headers: {'Origin': '127.0.0.1'}
-                // }).then(function(response){
-                //   console.log(response.status);
-                //   // if (response.status==200){
-                //   //   return true;
-                //   // }else{
-                //   //   return false;
-                //   // }
-                // }).catch(function (error) {
-                //   console.log(error)
-                // });
               })
             },
             changeType (e){

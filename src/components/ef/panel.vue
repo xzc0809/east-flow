@@ -101,8 +101,10 @@
 
             <div style="width: 250px;border-left: 1px solid #dce3e8;background-color: #FBFBFB;height: 100%" >
                 <flow-node-form ref="nodeForm" @setLineLabel="setLineLabel" @repaintEverything="repaintEverything"></flow-node-form>
+
             </div>
 <!--          </el-drawer>-->
+
         </div>
 
         <!-- 流程数据详情 -->
@@ -122,6 +124,7 @@
     import FlowInfo from '@/components/ef/info'
     import nodeCard from '@/components/ef/node_card'
     import navMenu from  '@/components/ef/navMenu'
+    import imgTemp from  '@/components/template/ImgTemp'
     import FlowNodeForm from './node_form'
     import Chat from '@/components/Chat'
     import lodash from 'lodash'
@@ -212,7 +215,7 @@
         mixins: [easyFlowMixin],
         components: {
           Node,
-            draggable, flowNode, nodeMenu, FlowInfo, FlowNodeForm, nodeCard ,navMenu ,Chat
+            draggable, flowNode, nodeMenu, FlowInfo, FlowNodeForm, nodeCard ,navMenu ,Chat ,imgTemp
         },
         directives: {
             'flowDrag': {
@@ -396,21 +399,6 @@
                   console.log(this.cardList);
                 })
               },200)
-
-                // axios({
-                //   method: 'get',
-                //   url: '/flow/cards',
-                //   params:{
-                //     current:2
-                //   }
-                // }).then((response)=>{
-                //
-                //    this.cardList = response.data.data.records;
-                //    // console.log(response.data)
-                // }).catch(function (error) {
-                //   // reject(error);
-                //   console.log(error)
-                // });
             },
             jsPlumbInit () {
                 this.jsPlumb.ready(() => {

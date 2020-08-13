@@ -93,7 +93,18 @@
                         </el-amap>
                         <el-button slot="reference" type="primary" icon="el-icon-location-outline" @click="visible = !visible"></el-button>
                       </el-popover>
+                      <el-popover
+                        placement="right"
+                        width="1%"
+                        trigger="click"
+                        content="这是一段内容,这是一段内容,这是一段内容,这是一段内容。"
+                        >
+                        <upload-temp></upload-temp>
+                        <el-button type="primary" slot="reference" icon="el-icon-files" ></el-button>
+                      </el-popover>
+
                     </el-form-item>
+
 
                     <el-form-item label="left坐标">
                         <el-input @keyup.native="save" v-model="node.left"></el-input>
@@ -145,10 +156,14 @@
     import { cloneDeep } from 'lodash'
     import { updateFlow} from '@/api/ApiFlowData'
     import {amapManager} from 'vue-amap'
+    import {uploadTemp} from '@/components/template/uploadTemp'
+    import UploadTemp from '../template/uploadTemp'
+    // import UploadTemp from './template/uploadTemp'
     const axios = require('axios');
 
     export default {
-        data () {
+      components: {UploadTemp},
+      data () {
             return {
                 visible: true,
                 // node 或 line

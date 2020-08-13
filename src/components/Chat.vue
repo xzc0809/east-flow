@@ -247,7 +247,7 @@
                       this.msglist.push({
                         id: this.msglist[this.msglist.length - 1].id + 1,
                         type: 4,
-                        content: 'http://1252014125.vod2.myqcloud.com/46740e39vodcq1252014125/1db79a9a5285890783173288539/ZOaFuTmGs30A.mp3',
+                        content: 'https://vod-dpy.bhbcdn.com/cv-vod_b323de_1554893977654.mp4',
                         me: false
                       })
                     }
@@ -256,6 +256,15 @@
                         id: this.msglist[this.msglist.length - 1].id + 1,
                         title:'位置接收测试',
                         type: 5,
+                        content: [119.30, 26.08],
+                        me: false
+                      })
+                    }
+                    else if(this.text === '卡片'){
+                      this.msglist.push({
+                        id: this.msglist[this.msglist.length - 1].id + 1,
+                        title:'卡片',
+                        type: 6,
                         content: [119.30, 26.08],
                         me: false
                       })
@@ -269,7 +278,7 @@
             getResponse(messageId,text) {
                 getChatResponse(messageId,text).then(res => {
                   console.log(res)
-                    if (res.data.type!=1 && res.data.type!=5){
+                    if (res.data.type!=1 && res.data.type!=5 && res.data.type!=6){
                       var url = "http://192.168.30.38:8080/download?fileName="+res.data.url
                     }else{
                       var url = res.data.url

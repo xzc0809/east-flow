@@ -1,7 +1,6 @@
 <template>
     <div class="container">
         <img class="head" src="https://pp.myapp.com/ma_icon/0/icon_42284557_1517984341/96"/>
-
         <div class="content">
             <div class="text" v-if="type===1">
                 {{content}}
@@ -15,7 +14,7 @@
            </div>
           <div id="video" v-else-if="type===4">
             <ele-gallery
-              source="https://vod-dpy.bhbcdn.com/cv-vod_b323de_1554893977654.mp4"
+              :source="content"
               type="video"
             ></ele-gallery>
           </div>
@@ -23,6 +22,9 @@
               {{title}}
             <el-amap :vid="amap-Demo"  :center="getContent(content)" :map-manager="amapManager" :zoom="zoom" :events="events" class="amap-demo" style="width: 600px;height: 380px">
             </el-amap>
+          </div>
+          <div id="temp" class="text" v-else-if="type===6" style="width: 220px;">
+            <ImgTemp :content="getContentObj(content)"></ImgTemp>
           </div>
         </div>
 
@@ -44,11 +46,15 @@
     // import ImagePreview from "vant/lib/image-preview";
      import voice from "@/components/voice";
      import { amapManager } from 'vue-amap'
+     import imgTemp from "@/components/template/ImgTemp"
       import { lazyAMapApiLoaderInstance } from 'vue-amap';
+      import ImgTemp from './template/ImgTemp'
+      import ElCard from './template/ElCard'
       //  let amapManager = new VueAMap.AMapManager();
     export default {
         name: "LeftItem",
-        comments:{voice},
+      components: {ImgTemp,ElCard},
+      comments:{voice},
         data: ()=> {
           return {
             zoom: 12,
@@ -84,7 +90,10 @@
                 this.title = contentArray[0];
                 return center;
               }
-            }
+            },
+          getContentObj(content){
+              return JSON.parse(content);
+          }
         }
     }
 </script>

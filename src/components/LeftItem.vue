@@ -92,6 +92,7 @@
               }
             },
           getContentObj(content){
+              console.log(JSON.parse(content))
               return JSON.parse(content);
           }
         }

@@ -61,6 +61,7 @@
         <template slot="prepend">纬度</template>
       </el-input>
     </div>
+    <el-button type="primary" style="margin-top: 20px">提交信息</el-button>
 
     </div>
 </template>
@@ -103,9 +104,64 @@
         num:1,
         num2:1,
         num3:1,
-        content:[{
-
-        }]
+        content: [
+          {
+            media: {
+              mediaUrl: "https://cdn.server/path/media.mp4",
+              mediaContentType: "video/mp4",
+              thumbnailUrl: "https://cdn.server/path/media.png",
+              thumbnailContentType: "image/png",
+              height: "MEDIUM_HEIGHT"
+            },
+            title: "This is a single rich card.",
+            description: "This is the description of the rich card. It\u0027s the first field that will be truncated if it exceeds the maximum width or height of a card.",
+            suggestions: [
+              {
+                action: {
+                  displayText: "Open website or deep link",
+                  postback: {
+                    data: "set_by_chatbot_open_url"
+                  },
+                  urlAction: {
+                    openUrl: {
+                      url: "https://www.google.com"
+                    }
+                  }
+                }
+              },
+              {
+                action: {
+                  displayText: "Call a phone number",
+                  postback: {
+                    data: "set_by_chatbot_open_dialer"
+                  },
+                  dialerAction: {
+                    dialPhoneNumber: {
+                      phoneNumber: "+1650253000"
+                    }
+                  }
+                }
+              },
+              {
+                action: {
+                  displayText: "Show location on a map",
+                  postback: {
+                    data: "set_by_chatbot_open_map"
+                  },
+                  mapAction: {
+                    showLocation: {
+                      location: {
+                        latitude: 37.4220041,
+                        longitude: -122.0862515,
+                        label: "Googleplex"
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        ]
       }
     },
     methods: {

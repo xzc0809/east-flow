@@ -135,7 +135,8 @@
       getCenter(location){
         let center = [location.longitude,location.latitude]
         return center;
-      }
+      },
+
     }
   }
 </script>

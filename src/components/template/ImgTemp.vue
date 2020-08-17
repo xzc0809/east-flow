@@ -5,8 +5,7 @@
       <el-card :body-style="{ padding: '0px' }" style="height: 100%">
 <!--        <img src="http://6emm.hxzdhn.com/img/2020/06/28/jausoellbtf.jpg" style class="image">-->
         <ele-gallery :width="220" :height="260"
-          :source="content[0].media.mediaUrl"
-          type="video"
+          :source="getUrl(content[0].media.mediaUrl)"
         ></ele-gallery>
         <div style="padding: 10px;">
           <span>{{content[0].title}}</span>
@@ -128,7 +127,7 @@
     },
     methods:{
       action(action){
-        window.open(action.action.urlAction.openUrl.url)//相当于target=_blank
+        window.open('http://'+action.action.urlAction.openUrl.url)//相当于target=_blank
         console.log(action)
         // this.$router.push({ path: })
       },
@@ -136,6 +135,10 @@
         let center = [location.longitude,location.latitude]
         return center;
       },
+      getUrl(url){
+        // console.log('http://192.168.30.38:8080/download?fileName='+url)
+        return 'http://192.168.30.38:8080/download?fileName='+url;
+      }
 
     }
   }

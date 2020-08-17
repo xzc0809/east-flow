@@ -1,69 +1,93 @@
 <template>
   <div>
-  <el-upload
-    class="avatar-uploader"
-    action="/upload/one"
-    :show-file-list="false"
-    :on-success="handleAvatarSuccess"
-    :before-upload="beforeAvatarUpload">
-    <img v-if="imageUrl" :src="imageUrl" class="avatar">
-    <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-  </el-upload>
-   <div>
-      <el-input placeholder="请输入内容" v-model="mediaUrl">
-        <template slot="prepend">图片地址</template>
-      </el-input>
-   </div>
-  <div>
-    <span style="float: left">标题及描述:</span>
-    <el-input placeholder="请输入内容" v-model="title">
-      <template slot="prepend">标题</template>
-    </el-input>
+    <div v-for="c in content">
+      <el-upload
+        class="avatar-uploader"
+        action="/upload/one"
+        :show-file-list="false"
+        :on-success="handleAvatarSuccess"
+        :before-upload="beforeAvatarUpload">
+        <img v-if="imageUrl" :src="imageUrl" class="avatar">
+        <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+      </el-upload>
+      <div>
+        <el-input placeholder="" v-model="c.media.mediaUrl" :disabled="true">
+          <template slot="prepend">图片</template>
+        </el-input>
+      </div>
+      <div>
+        <span style="float: left">标题及描述:</span>
+        <el-input placeholder="请输入内容" v-model="c.title">
+          <template slot="prepend">标题</template>
+        </el-input>
+      </div>
+      <div>
+        <el-input placeholder="请输入内容" v-model="c.description">
+          <template slot="prepend">描述</template>
+        </el-input>
+      </div>
+      <el-popover
+        placement="bottom"
+        width="30px"
+        trigger="click">
+        <el-table-column>
+          <el-button @click="addAction('url')">打开链接</el-button>
+        </el-table-column>
+        <el-table-column>
+          <el-button @click="addAction('dial')">拨打电话</el-button>
+        </el-table-column>
+        <el-table-column>
+          <el-button @click="addAction('map')">查看位置</el-button>
+        </el-table-column>
+<!--        <el-button slot="reference">+添加按钮</el-button>-->
+      </el-popover>
+      <!--  可变组件    -->
+      <div v-for="s in c.suggestions">
+        <div v-if="s.action.urlAction">
+          <span>链接：</span>
+          <el-input-number v-model="num" @change="handleChange" :min="1" :max="3" label="描述文字"></el-input-number>
+          <div>
+            <el-input placeholder="请输入内容" v-model="s.action.displayText">
+              <template slot="prepend">按钮名</template>
+            </el-input>
+            <el-input placeholder="请输入内容" v-model="s.action.urlAction.openUrl.url">
+              <template slot="prepend">链接</template>
+            </el-input>
+          </div>
+        </div>
+        <div v-else-if="s.action.dialerAction">
+          <span>电话：</span>
+          <div>
+            <el-input placeholder="请输入内容" v-model="s.action.displayText">
+              <template slot="prepend">按钮名</template>
+            </el-input>
+            <el-input placeholder="请输入内容" v-model="s.action.dialerAction.dialPhoneNumber.phoneNumber">
+              <template slot="prepend">电话</template>
+            </el-input>
+          </div>
+        </div>
+        <div v-else-if="s.action.mapAction">
+          <span>位置信息：</span>
+          <div>
+            <el-input placeholder="请输入内容" v-model="s.action.displayText">
+              <template slot="prepend">按钮名</template>
+            </el-input>
+            <el-input placeholder="请输入内容" v-model="s.action.mapAction.showLocation.location.label">
+              <template slot="prepend">标题</template>
+            </el-input>
+            <el-input placeholder="请输入内容" v-model="s.action.mapAction.showLocation.location.longitude">
+              <template slot="prepend">经度</template>
+            </el-input>
+            <el-input placeholder="请输入内容" v-model="s.action.mapAction.showLocation.location.latitude">
+              <template slot="prepend">纬度</template>
+            </el-input>
+          </div>
+        </div>
+        <!--  可变组件    -->
+      </div>
+      <el-button type="primary" style="margin-top: 20px" @click="submit">提交信息</el-button>
+    </div>
   </div>
-   <div>
-      <el-input placeholder="请输入内容" v-model="description">
-        <template slot="prepend">描述</template>
-      </el-input>
-    </div>
-    <span>链接：</span>
-    <el-input-number v-model="num" @change="handleChange()" :min="1" :max="3" label="描述文字"></el-input-number>
-    <div v-for="n in num">
-      <el-input placeholder="请输入内容" v-model="displayText">
-        <template slot="prepend">按钮名</template>
-      </el-input>
-      <el-input placeholder="请输入内容" v-model="url">
-        <template slot="prepend">链接</template>
-      </el-input>
-    </div>
-    <span>电话：</span>
-<!--    <el-input-number v-model="num2" @change="handleChange()" :min="1" :max="2" label="描述文字"></el-input-number>-->
-    <div v-for="n in num2">
-      <el-input placeholder="请输入内容" v-model="displayText2">
-        <template slot="prepend">按钮名</template>
-      </el-input>
-    <el-input placeholder="请输入内容" v-model="phoneNumber">
-      <template slot="prepend">电话</template>
-    </el-input>
-    </div>
-    <span>位置信息：</span>
-<!--    <el-input-number v-model="num3" @change="handleChange()" :min="1" :max="2" label="描述文字"></el-input-number>-->
-    <div v-for="n in num3">
-      <el-input placeholder="请输入内容" v-model="displayText3">
-        <template slot="prepend">按钮名</template>
-      </el-input>
-      <el-input placeholder="请输入内容" v-model="label">
-        <template slot="prepend">标题</template>
-      </el-input>
-    <el-input placeholder="请输入内容" v-model="longitude">
-      <template slot="prepend">经度</template>
-    </el-input>
-      <el-input placeholder="请输入内容" v-model="latitude">
-        <template slot="prepend">纬度</template>
-      </el-input>
-    </div>
-    <el-button type="primary" style="margin-top: 20px">提交信息</el-button>
-
-    </div>
 </template>
 <style>
   .avatar-uploader .el-upload {
@@ -96,64 +120,107 @@
 
 <script>
   export default {
-    props:['imageUrl'],
+    props: ['imageUrl'],
     data () {
       return {
         imageUrl: '',
-        input1:'',
-        num:1,
-        num2:1,
-        num3:1,
+        input1: '',
+        num: 1,
+        num2: 1,
+        num3: 1,
+        urlAction: {
+          action: {
+            displayText: '点击前往',
+            postback: {
+              data: 'url'
+            },
+            urlAction: {
+              openUrl: {
+                url: ''
+              }
+            }
+          }
+        },
+        dialerAction: {
+          action: {
+            displayText: '打电话',
+            postback: {
+              data: 'dialer'
+            },
+            dialerAction: {
+              dialPhoneNumber: {
+                phoneNumber: ''
+              }
+            }
+          }
+        },
+        mapAction: {
+          action: {
+            displayText: '显示位置',
+            postback: {
+              data: 'map'
+            },
+            mapAction: {
+              showLocation: {
+                location: {
+                  latitude: 37.4220041,
+                  longitude: -122.0862515,
+                  label: 'Googleplex'
+                }
+              }
+            }
+          }
+        },
         content: [
           {
             media: {
-              mediaUrl: "https://cdn.server/path/media.mp4",
-              mediaContentType: "video/mp4",
-              thumbnailUrl: "https://cdn.server/path/media.png",
-              thumbnailContentType: "image/png",
-              height: "MEDIUM_HEIGHT"
+              mediaUrl: '',
+              mediaContentType: 'video',
+              thumbnailUrl: 'https://cdn.server/path/media.png',
+              thumbnailContentType: 'image/png',
+              height: 'MEDIUM_HEIGHT'
             },
-            title: "This is a single rich card.",
-            description: "This is the description of the rich card. It\u0027s the first field that will be truncated if it exceeds the maximum width or height of a card.",
+            title: '标题',
+            description: '描述',
             suggestions: [
               {
                 action: {
-                  displayText: "Open website or deep link",
+                  displayText: '点击前往',
                   postback: {
-                    data: "set_by_chatbot_open_url"
+                    data: 'url'
                   },
                   urlAction: {
                     openUrl: {
-                      url: "https://www.google.com"
+                      url: ''
                     }
                   }
                 }
               },
               {
                 action: {
-                  displayText: "Call a phone number",
+                  displayText: '打电话',
                   postback: {
-                    data: "set_by_chatbot_open_dialer"
+                    data: 'dialer'
                   },
                   dialerAction: {
                     dialPhoneNumber: {
-                      phoneNumber: "+1650253000"
+                      phoneNumber: ''
                     }
                   }
                 }
               },
               {
                 action: {
-                  displayText: "Show location on a map",
+                  displayText: '显示位置',
                   postback: {
-                    data: "set_by_chatbot_open_map"
+                    data: 'map'
                   },
                   mapAction: {
                     showLocation: {
                       location: {
                         latitude: 37.4220041,
                         longitude: -122.0862515,
-                        label: "Googleplex"
+                        label: 'Googleplex'
                       }
                     }
                   }
@@ -165,8 +232,17 @@
       }
     },
     methods: {
+      addAction (value) {
+        switch (value) {
+          case 'url': this.content[0].suggestions.push(this.urlAction);break;
+          case 'dial':this.content[0].suggestions.push(this.dialerAction);break;
+          case 'map':this.content[0].suggestions.push(this.mapAction);break;
+        }
+      },
       handleAvatarSuccess (res, file) {
         this.imageUrl = URL.createObjectURL(file.raw)
+        console.log(res)
+        this.content[0].media.mediaUrl=res.data.url;
       },
       beforeAvatarUpload (file) {
         const isJPG = file.type === 'image/jpeg'
@@ -180,7 +256,34 @@
         }
         return isJPG && isLt2M
       },
-      handleChange(num) {
+      handleChange (value) {
+        // 数组push
+        var action = {
+          action: {
+            displayText: '点击前往',
+            postback: {
+              data: 'url'
+            },
+            urlAction: {
+              openUrl: {
+                url: ''
+              }
+            }
+          }
+        }
+        //大于则添加，小于则减小
+        if (value > this.num2) {
+          this.content[0].suggestions.push(action)
+          this.num2 = value
+        } else if (value < this.num2) {
+          this.content[0].suggestions.pop()
+          this.num2 = value
+        }
+        console.log(this.content[0].suggestions)
+      },
+      submit(){
+        this.$emit('saveUploadTemp',JSON.stringify(this.content));
+        this.$message.success("提交成功")
       }
     }
   }

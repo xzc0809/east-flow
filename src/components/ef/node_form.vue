@@ -31,7 +31,7 @@
                   </el-select>
                     </el-form-item>
                     <el-form-item label="文案内容" >
-                      <el-input @keyup.native="save" :autosize="{ minRows: 6, maxRows: 99}" type="textarea" v-model="node.resource.url"></el-input>
+                      <el-input @keyup.native="save" :autosize="{ minRows: 6, maxRows: 25}" type="textarea" v-model="node.resource.url"></el-input>
                       <el-upload
                         class="upload-demo"
                         action="/upload/one"
@@ -98,14 +98,15 @@
                         width="1%"
                         trigger="click"
                         content="这是一段内容,这是一段内容,这是一段内容,这是一段内容。"
-                        >
-                        <upload-temp></upload-temp>
+                      >
+                        <ImgTemp ref="content"></ImgTemp>
+                        <upload-temp
+                          @saveUploadTemp="saveUploadTemp"
+                        ></upload-temp>
                         <el-button type="primary" slot="reference" icon="el-icon-files" ></el-button>
                       </el-popover>
 
                     </el-form-item>
-
-
                     <el-form-item label="left坐标">
                         <el-input @keyup.native="save" v-model="node.left"></el-input>
                     </el-form-item>
@@ -115,11 +116,6 @@
                     <el-form-item label="ico图标">
                         <el-input @keyup.native="save" v-model="node.ico"></el-input>
                     </el-form-item>
-<!--                    <el-form-item>-->
-<!--                        <el-button icon="el-icon-close">重置</el-button>-->
-<!--                        <el-button type="primary" icon="el-icon-check" @click="save">保存</el-button>-->
-<!--                      <el-button type="primary" icon="el-icon-check" @click="commit">提交</el-button>-->
-<!--                    </el-form-item>-->
                 </el-form>
 
                 <el-form :model="line" ref="dataForm" label-width="80px" v-show="type === 'line'">
@@ -156,13 +152,14 @@
     import { cloneDeep } from 'lodash'
     import { updateFlow} from '@/api/ApiFlowData'
     import {amapManager} from 'vue-amap'
-    import {uploadTemp} from '@/components/template/uploadTemp'
+    // import {uploadTemp} from '@/components/template/uploadTemp'
     import UploadTemp from '../template/uploadTemp'
+    import ImgTemp from '../template/ImgTemp'
     // import UploadTemp from './template/uploadTemp'
     const axios = require('axios');
 
     export default {
-      components: {UploadTemp},
+      components: {ImgTemp, UploadTemp},
       data () {
             return {
                 visible: true,
@@ -239,6 +236,21 @@
             }
         },
         methods: {
+          saveUploadTemp(url){
+            console.log(url)
+            this.data.nodeList.filter((node)=>{
+              if (node.id === this.node.id) {
+                // node.content = this.node.content
+                // node.resource.url = this.node.content
+                node.resource.url = url
+                node.resource.type =6
+                // node.nodeType = this.node.nodeType
+                this.$emit('repaintEverything')
+                console.log("save")
+                console.log(this.data)
+              }
+            })
+          },
           saveLocation(){
             this.data.nodeList.filter((node) => {
               if (node.id === this.node.id) {
@@ -338,6 +350,7 @@
                     }
                 })
             },
+
             commit (){
               // this.save();
               //提交先保存

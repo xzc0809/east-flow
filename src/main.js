@@ -38,6 +38,7 @@ new Vue({
     template: '<App/>'
 })
 
+const BASEURL = "http://192.168.30.38:8080/"
 axios.interceptors.request.use(config => {
 return config;
 })
